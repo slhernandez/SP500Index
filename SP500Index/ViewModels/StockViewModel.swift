@@ -98,9 +98,7 @@ class StockViewModel: ObservableObject {
     }
 
     func changeTimeRange(_ range: TimeRange) async {
-        guard range != selectedTimeRange else { return }
-
-        selectedTimeRange = range
+        // Note: selectedTimeRange is already updated via binding from TimeRangeSelectorView
         isLoading = true
         errorMessage = nil
 
