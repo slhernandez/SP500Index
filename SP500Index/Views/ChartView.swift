@@ -213,21 +213,24 @@ struct PeriodSummaryView: View {
         HStack {
             if let change = data.periodChange, let percentChange = data.periodPercentChange {
                 Text(data.timeRange.description)
-                    .font(.subheadline)
+                    .font(.title3)
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
 
                 Spacer()
 
                 Text(NumberFormatters.formatChange(change))
-                    .font(.subheadline)
+                    .font(.title2)
+                    .fontWeight(.semibold)
                     .foregroundColor(data.isPositivePeriod ? .stockGreen : .stockRed)
 
                 Text("(\(NumberFormatters.formatPercent(percentChange)))")
-                    .font(.subheadline)
+                    .font(.title2)
+                    .fontWeight(.semibold)
                     .foregroundColor(data.isPositivePeriod ? .stockGreen : .stockRed)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
     }
 }
 
