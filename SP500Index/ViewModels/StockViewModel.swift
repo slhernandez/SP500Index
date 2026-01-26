@@ -30,6 +30,7 @@ class StockViewModel: ObservableObject {
     private let dataService: StockDataService
     private let refreshManager = RefreshManager()
     private var cancellables = Set<AnyCancellable>()
+    private var isChangingSymbol = false
 
     // MARK: - Computed Properties
 
@@ -53,6 +54,41 @@ class StockViewModel: ObservableObject {
     init(dataService: StockDataService = StockDataService()) {
         self.dataService = dataService
         setupRefreshManager()
+        observeSymbolChanges()
+    }
+
+    // MARK: - Symbol Change Handling
+
+    func changeSymbol(_ newSymbol: String) async {
+        guard !isChangingSymbol else { return }
+        guard newSymbol != currentQuote?.symbol else { return }
+
+        isChangingSymbol = true
+
+        // Clear cache for fresh data
+        await dataService.clearCache()
+
+        // Reload all data for new symbol
+        await loadInitialData()
+
+        isChangingSymbol = false
+    }
+
+    private func observeSymbolChanges() {
+        NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let storedSymbol = UserDefaults.standard.string(forKey: "selectedSymbol") ?? "FXAIX"
+                let loadedSymbol = self.currentQuote?.symbol ?? ""
+
+                if storedSymbol != loadedSymbol && !loadedSymbol.isEmpty {
+                    Task {
+                        await self.changeSymbol(storedSymbol)
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
