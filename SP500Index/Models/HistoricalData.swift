@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct HistoricalDataPoint: Identifiable, Equatable {
-    let id = UUID()
+struct HistoricalDataPoint: Identifiable, Equatable, Codable {
+    var id: Date { date } // Use date as stable identifier for Codable
     let date: Date
     let close: Double
     let open: Double?
@@ -28,9 +28,14 @@ struct HistoricalDataPoint: Identifiable, Equatable {
     static func == (lhs: HistoricalDataPoint, rhs: HistoricalDataPoint) -> Bool {
         lhs.date == rhs.date && lhs.close == rhs.close
     }
+
+    // Custom CodingKeys to exclude computed id
+    private enum CodingKeys: String, CodingKey {
+        case date, close, open, high, low, volume
+    }
 }
 
-struct HistoricalData {
+struct HistoricalData: Codable {
     let symbol: String
     let dataPoints: [HistoricalDataPoint]
     let timeRange: TimeRange

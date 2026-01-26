@@ -107,6 +107,9 @@ class StockViewModel: ObservableObject {
             historicalData = historical
             lastUpdated = Date()
 
+            // Persist to shared storage for widget
+            persistToSharedStorage(quote: quote, historicalData: historical)
+
             // Start auto-refresh after initial load
             refreshManager.start()
         } catch {
@@ -126,6 +129,9 @@ class StockViewModel: ObservableObject {
             let quote = try await dataService.fetchQuote(symbol: selectedSymbol)
             currentQuote = quote
             lastUpdated = Date()
+
+            // Update widget with fresh quote
+            SharedStorage.saveQuote(quote)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -139,7 +145,11 @@ class StockViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            historicalData = try await dataService.fetchHistoricalData(symbol: selectedSymbol, range: range)
+            let historical = try await dataService.fetchHistoricalData(symbol: selectedSymbol, range: range)
+            historicalData = historical
+
+            // Update widget with fresh historical data
+            SharedStorage.saveHistoricalData(historical)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -170,6 +180,12 @@ class StockViewModel: ObservableObject {
         refreshManager.configure(intervalMinutes: refreshIntervalMinutes) { [weak self] in
             await self?.refreshData()
         }
+    }
+
+    private func persistToSharedStorage(quote: StockQuote, historicalData: HistoricalData) {
+        SharedStorage.selectedSymbol = selectedSymbol
+        SharedStorage.saveQuote(quote)
+        SharedStorage.saveHistoricalData(historicalData)
     }
 }
 
