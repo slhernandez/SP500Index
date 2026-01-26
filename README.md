@@ -6,6 +6,7 @@ A native macOS desktop application for tracking S&P 500 index fund prices and hi
 
 - **Real-time price tracking** for S&P 500 index funds (FXAIX, SPY, VOO, IVV)
 - **Interactive historical charts** with 9 time ranges (1 week to 10 years)
+- **Desktop widget** with three sizes for at-a-glance price monitoring
 - **Auto-refresh** with configurable intervals (1, 5, 20, or 60 minutes)
 - **Market state detection** (regular hours, pre-market, post-market, closed)
 - **Native macOS experience** with keyboard shortcuts and settings window
@@ -57,6 +58,31 @@ Or open `SP500Index.xcodeproj` in Xcode.
 | SPY | SPDR S&P 500 ETF |
 | VOO | Vanguard S&P 500 ETF |
 | IVV | iShares Core S&P 500 ETF |
+
+## Desktop Widget
+
+The app includes a macOS desktop widget for monitoring prices at a glance without opening the main app.
+
+### Adding the Widget
+
+1. Right-click on your desktop and select "Edit Widgets..."
+2. Search for "S&P 500" in the widget gallery
+3. Drag your preferred widget size to the desktop
+
+### Widget Sizes
+
+| Size | Display |
+|------|---------|
+| **Small** | Symbol, price, daily change, market status |
+| **Medium** | Price info + mini sparkline chart |
+| **Large** | Full details with chart and stats (Open, High, Low, 52W Range) |
+
+### How It Works
+
+- The widget displays the same symbol selected in the main app
+- Data is shared via App Groups between the app and widget
+- Refreshes every 15 minutes during market hours, hourly otherwise
+- Open the main app to update the widget with fresh data
 
 ## Architecture
 
