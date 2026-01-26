@@ -16,6 +16,22 @@ struct StockQuote: Codable, Equatable {
     let marketState: MarketState
     let lastUpdated: Date
 
+    // Additional stats
+    let open: Double?
+    let dayHigh: Double?
+    let dayLow: Double?
+    let volume: Int?
+    let fiftyTwoWeekHigh: Double?
+    let fiftyTwoWeekLow: Double?
+
+    // These are typically not available from the chart API
+    let peRatio: Double?
+    let marketCap: Double?
+    let dividendYield: Double?
+    let beta: Double?
+    let eps: Double?
+    let avgVolume: Int?
+
     var priceChange: Double {
         currentPrice - previousClose
     }
@@ -79,6 +95,13 @@ struct YahooMeta: Codable {
 
     // Market state fields
     let currentTradingPeriod: CurrentTradingPeriod?
+
+    // Additional stats (may not be present for all instruments)
+    let regularMarketDayHigh: Double?
+    let regularMarketDayLow: Double?
+    let regularMarketVolume: Int?
+    let fiftyTwoWeekHigh: Double?
+    let fiftyTwoWeekLow: Double?
 
     var previousClose: Double { chartPreviousClose }
 }

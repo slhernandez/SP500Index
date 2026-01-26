@@ -120,9 +120,14 @@ actor StockDataService: StockDataServiceProtocol {
             fundName = "SPDR S&P 500 ETF"
         case "VOO":
             fundName = "Vanguard S&P 500 ETF"
+        case "IVV":
+            fundName = "iShares Core S&P 500 ETF"
         default:
             fundName = symbol
         }
+
+        // Get open price from indicators if available
+        let openPrice = result.indicators.quote.first?.open?.first ?? nil
 
         return StockQuote(
             symbol: meta.symbol,
@@ -131,7 +136,19 @@ actor StockDataService: StockDataServiceProtocol {
             previousClose: meta.previousClose,
             currency: meta.currency,
             marketState: marketState,
-            lastUpdated: Date(timeIntervalSince1970: TimeInterval(meta.regularMarketTime))
+            lastUpdated: Date(timeIntervalSince1970: TimeInterval(meta.regularMarketTime)),
+            open: openPrice,
+            dayHigh: meta.regularMarketDayHigh,
+            dayLow: meta.regularMarketDayLow,
+            volume: meta.regularMarketVolume,
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+            peRatio: nil,
+            marketCap: nil,
+            dividendYield: nil,
+            beta: nil,
+            eps: nil,
+            avgVolume: nil
         )
     }
 

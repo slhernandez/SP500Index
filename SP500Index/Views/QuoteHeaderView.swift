@@ -149,7 +149,19 @@ extension Color {
                 previousClose: 196.14,
                 currency: "USD",
                 marketState: .closed,
-                lastUpdated: Date()
+                lastUpdated: Date(),
+                open: 196.50,
+                dayHigh: 199.00,
+                dayLow: 195.80,
+                volume: 2500000,
+                fiftyTwoWeekHigh: 210.00,
+                fiftyTwoWeekLow: 165.00,
+                peRatio: nil,
+                marketCap: nil,
+                dividendYield: nil,
+                beta: nil,
+                eps: nil,
+                avgVolume: nil
             ),
             lastUpdated: Date(),
             isRefreshing: false
@@ -166,7 +178,19 @@ extension Color {
                 previousClose: 196.14,
                 currency: "USD",
                 marketState: .regular,
-                lastUpdated: Date()
+                lastUpdated: Date(),
+                open: 196.50,
+                dayHigh: 199.00,
+                dayLow: 195.80,
+                volume: 2500000,
+                fiftyTwoWeekHigh: 210.00,
+                fiftyTwoWeekLow: 165.00,
+                peRatio: nil,
+                marketCap: nil,
+                dividendYield: nil,
+                beta: nil,
+                eps: nil,
+                avgVolume: nil
             ),
             lastUpdated: Date(),
             isRefreshing: true

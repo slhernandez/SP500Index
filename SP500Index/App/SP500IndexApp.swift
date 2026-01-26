@@ -18,7 +18,7 @@ struct SP500IndexApp: App {
                 .environmentObject(viewModel)
         }
         .windowStyle(.automatic)
-        .defaultSize(width: 500, height: 600)
+        .defaultSize(width: 500, height: 700)
         .commands {
             // Replace standard app menu items
             CommandGroup(replacing: .appInfo) {

@@ -11,37 +11,36 @@ struct ContentView: View {
     @StateObject private var viewModel = StockViewModel()
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Quote header
-                QuoteHeaderView(
-                    quote: viewModel.currentQuote,
-                    lastUpdated: viewModel.lastUpdated,
-                    isRefreshing: viewModel.isRefreshing
-                )
+        VStack(alignment: .leading, spacing: 16) {
+            // Quote header
+            QuoteHeaderView(
+                quote: viewModel.currentQuote,
+                lastUpdated: viewModel.lastUpdated,
+                isRefreshing: viewModel.isRefreshing
+            )
 
-                Divider()
+            Divider()
 
-                // Time range selector
-                TimeRangeSelectorView(
-                    selectedRange: $viewModel.selectedTimeRange,
-                    onRangeChange: { range in
-                        await viewModel.changeTimeRange(range)
-                    }
-                )
+            // Time range selector
+            TimeRangeSelectorView(
+                selectedRange: $viewModel.selectedTimeRange,
+                onRangeChange: { range in
+                    await viewModel.changeTimeRange(range)
+                }
+            )
 
-                // Chart
-                ChartView(
-                    historicalData: viewModel.historicalData,
-                    timeRange: viewModel.selectedTimeRange
-                )
-                .frame(minHeight: 300)
+            // Chart - takes remaining space
+            ChartView(
+                historicalData: viewModel.historicalData,
+                timeRange: viewModel.selectedTimeRange
+            )
+            .clipped()
 
-                Spacer(minLength: 20)
-            }
-            .padding(20)
+            // Stats grid
+            StatsGridView(quote: viewModel.currentQuote)
         }
-        .frame(minWidth: 400, minHeight: 500)
+        .padding(20)
+        .frame(minWidth: 400, minHeight: 600)
         .background(Color(NSColor.windowBackgroundColor))
         .overlay {
             // Loading overlay
@@ -129,5 +128,5 @@ struct ErrorOverlay: View {
 
 #Preview {
     ContentView()
-        .frame(width: 500, height: 600)
+        .frame(width: 500, height: 700)
 }
