@@ -8,6 +8,7 @@
 import Foundation
 
 enum TimeRange: String, CaseIterable, Identifiable, Codable {
+    case oneDay = "1D"
     case oneWeek = "1W"
     case oneMonth = "1M"
     case threeMonths = "3M"
@@ -25,6 +26,7 @@ enum TimeRange: String, CaseIterable, Identifiable, Codable {
     /// Yahoo Finance API range parameter
     var apiRange: String {
         switch self {
+        case .oneDay: return "1d"
         case .oneWeek: return "5d"
         case .oneMonth: return "1mo"
         case .threeMonths: return "3mo"
@@ -40,6 +42,7 @@ enum TimeRange: String, CaseIterable, Identifiable, Codable {
     /// Yahoo Finance API interval parameter
     var apiInterval: String {
         switch self {
+        case .oneDay: return "5m"
         case .oneWeek: return "1d"
         case .oneMonth: return "1d"
         case .threeMonths: return "1d"
@@ -55,6 +58,7 @@ enum TimeRange: String, CaseIterable, Identifiable, Codable {
     /// Human-readable description
     var description: String {
         switch self {
+        case .oneDay: return "1 Day"
         case .oneWeek: return "1 Week"
         case .oneMonth: return "1 Month"
         case .threeMonths: return "3 Months"
@@ -70,6 +74,7 @@ enum TimeRange: String, CaseIterable, Identifiable, Codable {
     /// Date format to use for chart labels
     var dateFormat: String {
         switch self {
+        case .oneDay: return "h a"
         case .oneWeek: return "EEE"
         case .oneMonth: return "MMM d"
         case .threeMonths, .sixMonths, .yearToDate: return "MMM d"

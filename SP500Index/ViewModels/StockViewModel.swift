@@ -16,7 +16,7 @@ class StockViewModel: ObservableObject {
 
     @Published var currentQuote: StockQuote?
     @Published var historicalData: HistoricalData?
-    @Published var selectedTimeRange: TimeRange = .oneMonth
+    @Published var selectedTimeRange: TimeRange = .oneDay
     @Published var isLoading: Bool = false
     @Published var isRefreshing: Bool = false
     @Published var errorMessage: String?
