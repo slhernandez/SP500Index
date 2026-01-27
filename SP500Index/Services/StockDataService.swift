@@ -114,6 +114,8 @@ actor StockDataService: StockDataServiceProtocol {
 
         let fundName: String
         switch symbol.uppercased() {
+        case "^GSPC":
+            fundName = "S&P 500 Index"
         case "FXAIX":
             fundName = "Fidelity 500 Index Fund"
         case "SPY":

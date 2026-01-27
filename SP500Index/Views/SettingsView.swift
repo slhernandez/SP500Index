@@ -31,6 +31,7 @@ struct SettingsView: View {
 
             Section {
                 Picker("Index Fund", selection: $selectedSymbol) {
+                    Text("^GSPC - S&P 500 Index").tag("^GSPC")
                     Text("FXAIX - Fidelity 500 Index").tag("FXAIX")
                     Text("SPY - SPDR S&P 500 ETF").tag("SPY")
                     Text("VOO - Vanguard S&P 500 ETF").tag("VOO")
@@ -38,7 +39,7 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.menu)
 
-                Text("FXAIX is a mutual fund that updates once daily at market close. ETFs (SPY, VOO, IVV) update throughout trading hours.")
+                Text("^GSPC is the S&P 500 index (updates at close). FXAIX is a mutual fund (updates at close). ETFs (SPY, VOO, IVV) update throughout trading hours.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             } header: {
