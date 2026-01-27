@@ -1,6 +1,9 @@
 # SP500Index
 
-A native macOS desktop application for tracking S&P 500 index fund prices and historical performance.
+  SP500Index is a native macOS desktop application built with SwiftUI for tracking S&P 500 index fund prices. It displays real-time
+  quotes and interactive historical charts for popular index funds including FXAIX, VOO, SPY, and IVV. Features include a desktop
+  widget for at-a-glance price updates, configurable auto-refresh intervals, and support for multiple time ranges from 1 week to 10
+  years. Built entirely with native Apple frameworks—no external dependencies required.
 
 ## Features
 
