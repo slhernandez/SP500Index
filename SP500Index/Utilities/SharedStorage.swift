@@ -2,7 +2,7 @@
 //  SharedStorage.swift
 //  SP500Index
 //
-//  Shared UserDefaults storage for main app and widget
+//  Shared storage for main app and widget via App Group container
 //
 
 import Foundation
@@ -32,38 +32,76 @@ struct SharedStorage {
         }
         set {
             sharedDefaults?.set(newValue, forKey: Keys.selectedSymbol)
+            sharedDefaults?.synchronize()
         }
     }
 
     // MARK: - Quote
 
     static func saveQuote(_ quote: StockQuote) {
-        guard let defaults = sharedDefaults else { return }
-        if let data = try? JSONEncoder().encode(quote) {
-            defaults.set(data, forKey: Keys.currentQuote)
-            defaults.set(Date(), forKey: Keys.lastUpdated)
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+            return
+        }
+
+        let fileURL = containerURL.appendingPathComponent("quote.json")
+        do {
+            let data = try JSONEncoder().encode(quote)
+            try data.write(to: fileURL, options: .atomic)
+        } catch {
+            // Silently fail - widget will show stale data
         }
     }
 
     static func loadQuote() -> StockQuote? {
-        guard let defaults = sharedDefaults,
-              let data = defaults.data(forKey: Keys.currentQuote) else { return nil }
-        return try? JSONDecoder().decode(StockQuote.self, from: data)
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+            return nil
+        }
+
+        let fileURL = containerURL.appendingPathComponent("quote.json")
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return nil
+        }
+
+        do {
+            let data = try Data(contentsOf: fileURL)
+            return try JSONDecoder().decode(StockQuote.self, from: data)
+        } catch {
+            return nil
+        }
     }
 
     // MARK: - Historical Data
 
     static func saveHistoricalData(_ data: HistoricalData) {
-        guard let defaults = sharedDefaults else { return }
-        if let encoded = try? JSONEncoder().encode(data) {
-            defaults.set(encoded, forKey: Keys.historicalData)
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+            return
+        }
+
+        let fileURL = containerURL.appendingPathComponent("historical.json")
+        do {
+            let encoded = try JSONEncoder().encode(data)
+            try encoded.write(to: fileURL, options: .atomic)
+        } catch {
+            // Silently fail - widget will show stale data
         }
     }
 
     static func loadHistoricalData() -> HistoricalData? {
-        guard let defaults = sharedDefaults,
-              let data = defaults.data(forKey: Keys.historicalData) else { return nil }
-        return try? JSONDecoder().decode(HistoricalData.self, from: data)
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+            return nil
+        }
+
+        let fileURL = containerURL.appendingPathComponent("historical.json")
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return nil
+        }
+
+        do {
+            let data = try Data(contentsOf: fileURL)
+            return try JSONDecoder().decode(HistoricalData.self, from: data)
+        } catch {
+            return nil
+        }
     }
 
     // MARK: - Last Updated

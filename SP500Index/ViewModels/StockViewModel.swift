@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import WidgetKit
 
 @MainActor
 class StockViewModel: ObservableObject {
@@ -186,6 +187,9 @@ class StockViewModel: ObservableObject {
         SharedStorage.selectedSymbol = selectedSymbol
         SharedStorage.saveQuote(quote)
         SharedStorage.saveHistoricalData(historicalData)
+
+        // Trigger widget reload after data is persisted
+        WidgetCenter.shared.reloadTimelines(ofKind: "SP500Widget")
     }
 }
 

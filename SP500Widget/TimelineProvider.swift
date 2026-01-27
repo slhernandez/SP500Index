@@ -23,7 +23,6 @@ struct StockTimelineProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<StockEntry>) -> Void) {
         let entry = loadCurrentEntry()
         let refreshDate = calculateNextRefresh()
-
         let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
         completion(timeline)
     }
