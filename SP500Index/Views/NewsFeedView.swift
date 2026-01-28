@@ -20,9 +20,9 @@ struct NewsFeedView: View {
             // Header
             VStack(alignment: .leading, spacing: 2) {
                 Text("News stories")
-                    .font(.headline)
+                    .font(.title3)
                 Text("From sources across the web")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
             }
 
@@ -55,20 +55,20 @@ struct NewsArticleRow: View {
             // Publisher and time
             HStack(spacing: 4) {
                 Text(article.publisher)
-                    .font(.caption)
+                    .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
                 Text("·")
                     .foregroundColor(.secondary)
                 Text(article.relativeTimeString)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             .lineLimit(1)
 
             // Headline
             Text(article.title)
-                .font(.subheadline)
+                .font(.body)
                 .foregroundColor(.primary)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)
