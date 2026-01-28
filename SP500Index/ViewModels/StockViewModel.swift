@@ -138,8 +138,10 @@ class StockViewModel: ObservableObject {
             SharedStorage.saveQuote(quote)
 
             // Refresh news
-            if let news = try? await dataService.fetchNews(query: "S&P 500") {
-                newsArticles = news
+            do {
+                newsArticles = try await dataService.fetchNews(query: "S&P 500")
+            } catch {
+                print("News refresh failed: \(error.localizedDescription)")
             }
         } catch {
             errorMessage = error.localizedDescription

@@ -20,10 +20,14 @@ struct NewsArticle: Identifiable, Codable {
         Date(timeIntervalSince1970: TimeInterval(providerPublishTime))
     }
 
-    var relativeTimeString: String {
+    private static let relativeFormatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: publishedDate, relativeTo: Date())
+        return formatter
+    }()
+
+    var relativeTimeString: String {
+        Self.relativeFormatter.localizedString(for: publishedDate, relativeTo: Date())
     }
 }
 
