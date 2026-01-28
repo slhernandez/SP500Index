@@ -13,6 +13,8 @@
 		A1000001233456780000004 /* StockQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001233456780000014 /* StockQuote.swift */; };
 		A1000001233456780000005 /* HistoricalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001233456780000015 /* HistoricalData.swift */; };
 		A1000001233456780000006 /* TimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001233456780000016 /* TimeRange.swift */; };
+		C1000001233456780000001 /* NewsArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000001233456780000011 /* NewsArticle.swift */; };
+		C1000001233456780000002 /* NewsArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000001233456780000011 /* NewsArticle.swift */; };
 		A1000001233456780000007 /* StockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001233456780000017 /* StockViewModel.swift */; };
 		A1000001233456780000008 /* StockDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001233456780000018 /* StockDataService.swift */; };
 		A1000001233456780000009 /* RefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001233456780000019 /* RefreshManager.swift */; };
@@ -72,6 +74,7 @@
 		A1000001233456780000014 /* StockQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockQuote.swift; sourceTree = "<group>"; };
 		A1000001233456780000015 /* HistoricalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalData.swift; sourceTree = "<group>"; };
 		A1000001233456780000016 /* TimeRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRange.swift; sourceTree = "<group>"; };
+		C1000001233456780000011 /* NewsArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticle.swift; sourceTree = "<group>"; };
 		A1000001233456780000017 /* StockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockViewModel.swift; sourceTree = "<group>"; };
 		A1000001233456780000018 /* StockDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDataService.swift; sourceTree = "<group>"; };
 		A1000001233456780000019 /* RefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshManager.swift; sourceTree = "<group>"; };
@@ -165,6 +168,7 @@
 				A1000001233456780000014 /* StockQuote.swift */,
 				A1000001233456780000015 /* HistoricalData.swift */,
 				A1000001233456780000016 /* TimeRange.swift */,
+				C1000001233456780000011 /* NewsArticle.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -346,6 +350,7 @@
 				A1000001233456780000004 /* StockQuote.swift in Sources */,
 				A1000001233456780000005 /* HistoricalData.swift in Sources */,
 				A1000001233456780000006 /* TimeRange.swift in Sources */,
+				C1000001233456780000001 /* NewsArticle.swift in Sources */,
 				A1000001233456780000007 /* StockViewModel.swift in Sources */,
 				A1000001233456780000008 /* StockDataService.swift in Sources */,
 				A1000001233456780000009 /* RefreshManager.swift in Sources */,
@@ -372,6 +377,7 @@
 				B1000001000000000000006 /* StockQuote.swift in Sources */,
 				B1000001000000000000007 /* HistoricalData.swift in Sources */,
 				B1000001000000000000008 /* TimeRange.swift in Sources */,
+				C1000001233456780000002 /* NewsArticle.swift in Sources */,
 				B1000001000000000000009 /* StockDataService.swift in Sources */,
 				B100000100000000000000A /* SharedStorage.swift in Sources */,
 				B100000100000000000000B /* NumberFormatters.swift in Sources */,

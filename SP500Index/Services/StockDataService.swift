@@ -10,6 +10,7 @@ import Foundation
 protocol StockDataServiceProtocol {
     func fetchQuote(symbol: String) async throws -> StockQuote
     func fetchHistoricalData(symbol: String, range: TimeRange) async throws -> HistoricalData
+    func fetchNews(query: String) async throws -> [NewsArticle]
 }
 
 actor StockDataService: StockDataServiceProtocol {
@@ -18,6 +19,9 @@ actor StockDataService: StockDataServiceProtocol {
 
     private var cachedHistoricalData: [String: HistoricalData] = [:]
     private let cacheTimeout: TimeInterval = 300 // 5 minutes
+
+    private var cachedNews: [String: (articles: [NewsArticle], fetchedAt: Date)] = [:]
+    private let newsCacheTimeout: TimeInterval = 900 // 15 minutes
 
     init(session: URLSession = .shared) {
         self.session = session
@@ -92,6 +96,43 @@ actor StockDataService: StockDataServiceProtocol {
 
     func clearCache() {
         cachedHistoricalData.removeAll()
+        cachedNews.removeAll()
+    }
+
+    func fetchNews(query: String) async throws -> [NewsArticle] {
+        // Check cache
+        if let cached = cachedNews[query],
+           Date().timeIntervalSince(cached.fetchedAt) < newsCacheTimeout {
+            return cached.articles
+        }
+
+        var components = URLComponents(string: "https://query1.finance.yahoo.com/v1/finance/search")!
+        components.queryItems = [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "newsCount", value: "8"),
+            URLQueryItem(name: "quotesCount", value: "0")
+        ]
+
+        var request = URLRequest(url: components.url!)
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", forHTTPHeaderField: "User-Agent")
+
+        let (data, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw StockDataError.invalidResponse
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            throw StockDataError.httpError(statusCode: httpResponse.statusCode)
+        }
+
+        let searchResponse = try JSONDecoder().decode(YahooSearchResponse.self, from: data)
+        let articles = searchResponse.news ?? []
+
+        // Cache the result
+        cachedNews[query] = (articles: articles, fetchedAt: Date())
+
+        return articles
     }
 
     // MARK: - Private Methods
