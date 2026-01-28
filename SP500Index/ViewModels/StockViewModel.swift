@@ -21,10 +21,15 @@ class StockViewModel: ObservableObject {
     @Published var isRefreshing: Bool = false
     @Published var errorMessage: String?
     @Published var lastUpdated: Date?
+    @Published var newsArticles: [NewsArticle] = []
 
     // Settings
     @AppStorage("refreshInterval") var refreshIntervalMinutes: Int = 5
     @AppStorage("selectedSymbol") var selectedSymbol: String = "FXAIX"
+
+    // MARK: - Constants
+
+    private static let newsQuery = "S&P 500"
 
     // MARK: - Private Properties
 
@@ -101,11 +106,13 @@ class StockViewModel: ObservableObject {
         do {
             async let quoteTask = dataService.fetchQuote(symbol: selectedSymbol)
             async let historicalTask = dataService.fetchHistoricalData(symbol: selectedSymbol, range: selectedTimeRange)
+            async let newsTask = dataService.fetchNews(query: Self.newsQuery)
 
-            let (quote, historical) = try await (quoteTask, historicalTask)
+            let (quote, historical, news) = try await (quoteTask, historicalTask, newsTask)
 
             currentQuote = quote
             historicalData = historical
+            newsArticles = news
             lastUpdated = Date()
 
             // Persist to shared storage for widget
@@ -133,6 +140,13 @@ class StockViewModel: ObservableObject {
 
             // Update widget with fresh quote
             SharedStorage.saveQuote(quote)
+
+            // Refresh news
+            do {
+                newsArticles = try await dataService.fetchNews(query: Self.newsQuery)
+            } catch {
+                print("News refresh failed: \(error.localizedDescription)")
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
