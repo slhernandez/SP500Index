@@ -11,36 +11,42 @@ struct ContentView: View {
     @StateObject private var viewModel = StockViewModel()
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Quote header
-            QuoteHeaderView(
-                quote: viewModel.currentQuote,
-                lastUpdated: viewModel.lastUpdated,
-                isRefreshing: viewModel.isRefreshing
-            )
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // Quote header
+                QuoteHeaderView(
+                    quote: viewModel.currentQuote,
+                    lastUpdated: viewModel.lastUpdated,
+                    isRefreshing: viewModel.isRefreshing
+                )
 
-            Divider()
+                Divider()
 
-            // Time range selector
-            TimeRangeSelectorView(
-                selectedRange: $viewModel.selectedTimeRange,
-                onRangeChange: { range in
-                    await viewModel.changeTimeRange(range)
-                }
-            )
+                // Time range selector
+                TimeRangeSelectorView(
+                    selectedRange: $viewModel.selectedTimeRange,
+                    onRangeChange: { range in
+                        await viewModel.changeTimeRange(range)
+                    }
+                )
 
-            // Chart - takes remaining space
-            ChartView(
-                historicalData: viewModel.historicalData,
-                timeRange: viewModel.selectedTimeRange
-            )
-            .clipped()
+                // Chart - takes remaining space
+                ChartView(
+                    historicalData: viewModel.historicalData,
+                    timeRange: viewModel.selectedTimeRange
+                )
+                .clipped()
+                .frame(minHeight: 200)
 
-            // Stats grid
-            StatsGridView(quote: viewModel.currentQuote)
+                // Stats grid
+                StatsGridView(quote: viewModel.currentQuote)
+
+                // News feed
+                NewsFeedView(articles: viewModel.newsArticles)
+            }
+            .padding(20)
         }
-        .padding(20)
-        .frame(minWidth: 400, minHeight: 600)
+        .frame(minWidth: 400, minHeight: 750)
         .background(Color(NSColor.windowBackgroundColor))
         .overlay {
             // Loading overlay
