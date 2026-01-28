@@ -46,6 +46,7 @@ struct ContentView: View {
             }
             .padding(20)
         }
+        .scrollIndicators(.hidden)
         .frame(minWidth: 400, minHeight: 750)
         .background(Color(NSColor.windowBackgroundColor))
         .overlay {

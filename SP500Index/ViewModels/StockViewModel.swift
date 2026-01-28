@@ -27,6 +27,10 @@ class StockViewModel: ObservableObject {
     @AppStorage("refreshInterval") var refreshIntervalMinutes: Int = 5
     @AppStorage("selectedSymbol") var selectedSymbol: String = "FXAIX"
 
+    // MARK: - Constants
+
+    private static let newsQuery = "S&P 500"
+
     // MARK: - Private Properties
 
     private let dataService: StockDataService
@@ -102,7 +106,7 @@ class StockViewModel: ObservableObject {
         do {
             async let quoteTask = dataService.fetchQuote(symbol: selectedSymbol)
             async let historicalTask = dataService.fetchHistoricalData(symbol: selectedSymbol, range: selectedTimeRange)
-            async let newsTask = dataService.fetchNews(query: "S&P 500")
+            async let newsTask = dataService.fetchNews(query: Self.newsQuery)
 
             let (quote, historical, news) = try await (quoteTask, historicalTask, newsTask)
 
@@ -139,7 +143,7 @@ class StockViewModel: ObservableObject {
 
             // Refresh news
             do {
-                newsArticles = try await dataService.fetchNews(query: "S&P 500")
+                newsArticles = try await dataService.fetchNews(query: Self.newsQuery)
             } catch {
                 print("News refresh failed: \(error.localizedDescription)")
             }
