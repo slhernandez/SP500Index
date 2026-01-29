@@ -47,14 +47,27 @@ jobs:
           # Set as default keychain
           security list-keychain -d user -s $KEYCHAIN_PATH
 
+      - name: Install Provisioning Profiles
+        env:
+          APP_PROFILE_BASE64: ${{ secrets.APP_PROVISIONING_PROFILE_BASE64 }}
+          WIDGET_PROFILE_BASE64: ${{ secrets.WIDGET_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          # Create profiles directory
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+
+          # Decode and install app profile
+          echo -n "$APP_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/app.mobileprovision
+
+          # Decode and install widget profile
+          echo -n "$WIDGET_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/widget.mobileprovision
+
       - name: Archive App
         run: |
           xcodebuild archive \
             -scheme SP500Index \
             -configuration Release \
             -archivePath $RUNNER_TEMP/SP500Index.xcarchive \
-            -destination "generic/platform=macOS" \
-            -allowProvisioningUpdates
+            -destination "generic/platform=macOS"
 
       - name: Export Signed App
         run: |
