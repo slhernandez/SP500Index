@@ -24,7 +24,7 @@
 ### Build from Source
 
 ```bash
-git clone https://github.com/yourusername/SP500Index.git
+git clone https://github.com/slhernandez/SP500Index.git
 cd SP500Index
 xcodebuild build -scheme SP500Index -configuration Release
 open build/Release/SP500Index.app
@@ -44,6 +44,77 @@ xcodebuild clean -scheme SP500Index
 ```
 
 Or open `SP500Index.xcodeproj` in Xcode.
+
+## Distribution
+
+The app is signed with Developer ID and notarized by Apple for distribution outside the Mac App Store.
+
+### Building a Release DMG (Local)
+
+Prerequisites (one-time setup):
+1. Developer ID Application certificate (create in Xcode → Settings → Accounts → Manage Certificates)
+2. App-specific password from [appleid.apple.com](https://appleid.apple.com)
+3. Store notarization credentials:
+   ```bash
+   xcrun notarytool store-credentials "SP500Index-notarize" \
+     --apple-id "your@email.com" \
+     --team-id "YOUR_TEAM_ID" \
+     --password "your-app-specific-password"
+   ```
+
+Build a signed and notarized DMG:
+
+```bash
+./scripts/build-release.sh
+```
+
+This will:
+- Archive and sign the app with Developer ID
+- Submit to Apple for notarization
+- Staple the notarization ticket
+- Create `build/SP500Index.dmg` ready for distribution
+
+### CI/CD with GitHub Actions
+
+The repository includes a GitHub Actions workflow (`.github/workflows/release.yml`) that automatically builds, signs, and notarizes the app when you push a version tag.
+
+**To create a release:**
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+This triggers the workflow which:
+1. Builds and archives the app
+2. Signs with Developer ID certificate
+3. Submits for Apple notarization
+4. Creates a DMG and attaches it to a GitHub Release
+
+**Required GitHub Secrets:**
+
+| Secret | Description |
+|--------|-------------|
+| `BUILD_CERTIFICATE_BASE64` | Developer ID certificate (.p12), base64 encoded |
+| `P12_PASSWORD` | Password for the .p12 file |
+| `KEYCHAIN_PASSWORD` | Any random password (for temp CI keychain) |
+| `APPLE_ID` | Apple Developer account email |
+| `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password for notarization |
+| `APPLE_TEAM_ID` | 10-character Apple Team ID |
+
+### Sharing the DMG
+
+The notarized DMG can be distributed via:
+- Direct download link
+- GitHub Releases (automatic with tag push)
+- Any file hosting service
+
+Users can install by:
+1. Download `SP500Index.dmg`
+2. Double-click to mount
+3. Drag `SP500Index.app` to Applications
+
+No Gatekeeper warnings will appear since the app is signed and notarized.
 
 ## Usage
 
