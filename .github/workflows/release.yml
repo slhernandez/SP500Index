@@ -53,7 +53,8 @@ jobs:
             -scheme SP500Index \
             -configuration Release \
             -archivePath $RUNNER_TEMP/SP500Index.xcarchive \
-            -destination "generic/platform=macOS"
+            -destination "generic/platform=macOS" \
+            -allowProvisioningUpdates
 
       - name: Export Signed App
         run: |
