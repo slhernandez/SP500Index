@@ -9,6 +9,13 @@
     <key>signingCertificate</key>
     <string>Developer ID Application</string>
     <key>signingStyle</key>
-    <string>automatic</string>
+    <string>manual</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.steveh.SP500Index</key>
+        <string>42252596-64f8-461a-87a3-27549e59d430</string>
+        <key>com.steveh.SP500Index.SP500Widget</key>
+        <string>a2636c18-c3fe-49c7-844c-56d3f68df95c</string>
+    </dict>
 </dict>
 </plist>
