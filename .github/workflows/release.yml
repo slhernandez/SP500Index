@@ -1,0 +1,133 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    name: Build and Release
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Import Code-Signing Certificate
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # Create paths
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # Decode certificate
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+
+          # Create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import certificate
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" \
+            -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+
+          # Allow codesign to access keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Set as default keychain
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+      - name: Archive App
+        run: |
+          xcodebuild archive \
+            -scheme SP500Index \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/SP500Index.xcarchive \
+            -destination "generic/platform=macOS"
+
+      - name: Export Signed App
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/SP500Index.xcarchive \
+            -exportPath $RUNNER_TEMP/export \
+            -exportOptionsPlist ExportOptions.plist
+
+      - name: Verify Code Signature
+        run: |
+          codesign --verify --deep --strict --verbose=2 "$RUNNER_TEMP/export/SP500Index.app"
+
+      - name: Notarize App
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          # Create ZIP for notarization
+          ditto -c -k --keepParent \
+            "$RUNNER_TEMP/export/SP500Index.app" \
+            "$RUNNER_TEMP/SP500Index.zip"
+
+          # Submit for notarization
+          xcrun notarytool submit "$RUNNER_TEMP/SP500Index.zip" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --wait
+
+          # Staple ticket
+          xcrun stapler staple "$RUNNER_TEMP/export/SP500Index.app"
+
+      - name: Verify Notarization
+        run: |
+          spctl --assess --type open --context context:primary-signature --verbose=2 "$RUNNER_TEMP/export/SP500Index.app"
+
+      - name: Create DMG
+        run: |
+          hdiutil create \
+            -volname "SP500Index" \
+            -srcfolder "$RUNNER_TEMP/export/SP500Index.app" \
+            -ov \
+            -format UDZO \
+            "$RUNNER_TEMP/SP500Index.dmg"
+
+      - name: Notarize DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          xcrun notarytool submit "$RUNNER_TEMP/SP500Index.dmg" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --wait
+
+          xcrun stapler staple "$RUNNER_TEMP/SP500Index.dmg"
+
+      - name: Upload DMG Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP500Index-macOS
+          path: ${{ runner.temp }}/SP500Index.dmg
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ runner.temp }}/SP500Index.dmg
+          generate_release_notes: true
+
+      - name: Cleanup Keychain
+        if: always()
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
