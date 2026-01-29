@@ -79,8 +79,9 @@ jobs:
             -archivePath $RUNNER_TEMP/SP500Index.xcarchive \
             -destination "generic/platform=macOS" \
             CODE_SIGN_IDENTITY="-" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGN_STYLE="Manual" \
+            ENABLE_HARDENED_RUNTIME=YES \
+            OTHER_CODE_SIGN_FLAGS="--options=runtime"
 
       - name: Export Signed App
         run: |
