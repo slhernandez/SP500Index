@@ -9,14 +9,11 @@ on:
 jobs:
   build:
     name: Build SP500Index
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
 
       - name: Show Xcode version
         run: xcodebuild -version
