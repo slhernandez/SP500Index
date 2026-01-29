@@ -53,13 +53,23 @@ jobs:
           WIDGET_PROFILE_BASE64: ${{ secrets.WIDGET_PROVISIONING_PROFILE_BASE64 }}
         run: |
           # Create profiles directory
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          PROFILES_DIR=~/Library/MobileDevice/Provisioning\ Profiles
+          mkdir -p "$PROFILES_DIR"
 
-          # Decode and install app profile
-          echo -n "$APP_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/app.mobileprovision
+          # Decode app profile, extract UUID, and rename
+          echo -n "$APP_PROFILE_BASE64" | base64 --decode -o /tmp/app.mobileprovision
+          APP_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i /tmp/app.mobileprovision))
+          cp /tmp/app.mobileprovision "$PROFILES_DIR/$APP_UUID.mobileprovision"
+          echo "Installed app profile with UUID: $APP_UUID"
 
-          # Decode and install widget profile
-          echo -n "$WIDGET_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/widget.mobileprovision
+          # Decode widget profile, extract UUID, and rename
+          echo -n "$WIDGET_PROFILE_BASE64" | base64 --decode -o /tmp/widget.mobileprovision
+          WIDGET_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i /tmp/widget.mobileprovision))
+          cp /tmp/widget.mobileprovision "$PROFILES_DIR/$WIDGET_UUID.mobileprovision"
+          echo "Installed widget profile with UUID: $WIDGET_UUID"
+
+          # List installed profiles
+          ls -la "$PROFILES_DIR"
 
       - name: Archive App
         run: |
