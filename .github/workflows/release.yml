@@ -77,7 +77,10 @@ jobs:
             -scheme SP500Index \
             -configuration Release \
             -archivePath $RUNNER_TEMP/SP500Index.xcarchive \
-            -destination "generic/platform=macOS"
+            -destination "generic/platform=macOS" \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
 
       - name: Export Signed App
         run: |
