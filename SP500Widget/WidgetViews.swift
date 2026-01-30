@@ -181,7 +181,7 @@ struct LargeWidgetView: View {
 
                 Spacer()
 
-                Text("Updated \(entry.date.formatted(.relative(presentation: .numeric)))")
+                Text("Updated \(entry.date.asLastUpdated)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
