@@ -108,6 +108,7 @@ struct ChartView: View {
                                     selectedDataPoint = nil
                                 }
                         )
+                        #if os(macOS)
                         .onContinuousHover { phase in
                             switch phase {
                             case .active(let location):
@@ -116,6 +117,7 @@ struct ChartView: View {
                                 selectedDataPoint = nil
                             }
                         }
+                        #endif
                 }
             }
         } else {

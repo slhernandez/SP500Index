@@ -2,7 +2,7 @@
 //  SP500Widget.swift
 //  SP500Widget
 //
-//  Widget entry point for S&P 500 Index desktop widget
+//  Widget entry point for S&P 500 Index widget
 //
 
 import WidgetKit
@@ -19,7 +19,25 @@ struct SP500Widget: Widget {
         }
         .configurationDisplayName("S&P 500 Index")
         .description("Track S&P 500 index fund prices")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .supportedFamilies(supportedFamilies)
+    }
+
+    private var supportedFamilies: [WidgetFamily] {
+        #if os(iOS)
+        return [
+            .systemSmall,
+            .systemMedium,
+            .systemLarge,
+            .accessoryCircular,
+            .accessoryRectangular
+        ]
+        #else
+        return [
+            .systemSmall,
+            .systemMedium,
+            .systemLarge
+        ]
+        #endif
     }
 }
 
@@ -37,6 +55,12 @@ struct StockWidgetEntryView: View {
             MediumWidgetView(entry: entry)
         case .systemLarge:
             LargeWidgetView(entry: entry)
+        #if os(iOS)
+        case .accessoryCircular:
+            AccessoryCircularView(entry: entry)
+        case .accessoryRectangular:
+            AccessoryRectangularView(entry: entry)
+        #endif
         default:
             SmallWidgetView(entry: entry)
         }
@@ -62,3 +86,17 @@ struct StockWidgetEntryView: View {
 } timeline: {
     StockEntry.preview
 }
+
+#if os(iOS)
+#Preview(as: .accessoryCircular) {
+    SP500Widget()
+} timeline: {
+    StockEntry.preview
+}
+
+#Preview(as: .accessoryRectangular) {
+    SP500Widget()
+} timeline: {
+    StockEntry.preview
+}
+#endif

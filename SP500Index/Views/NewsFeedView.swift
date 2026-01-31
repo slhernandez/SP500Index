@@ -49,6 +49,9 @@ struct NewsFeedView: View {
 
 struct NewsArticleRow: View {
     let article: NewsArticle
+    #if os(macOS)
+    @State private var isHovering = false
+    #endif
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -78,18 +81,21 @@ struct NewsArticleRow: View {
         .onTapGesture {
             openArticle()
         }
+        #if os(macOS)
         .onHover { hovering in
+            isHovering = hovering
             if hovering {
                 NSCursor.pointingHand.set()
             } else {
                 NSCursor.arrow.set()
             }
         }
+        #endif
     }
 
     private func openArticle() {
         guard let url = URL(string: article.link) else { return }
-        NSWorkspace.shared.open(url)
+        PlatformSupport.openURL(url)
     }
 }
 

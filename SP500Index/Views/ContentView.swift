@@ -47,8 +47,10 @@ struct ContentView: View {
             .padding(20)
         }
         .scrollIndicators(.hidden)
+        #if os(macOS)
         .frame(minWidth: 400, minHeight: 750)
-        .background(Color(NSColor.windowBackgroundColor))
+        #endif
+        .background(PlatformSupport.systemBackground)
         .overlay {
             // Loading overlay
             if viewModel.isLoading {

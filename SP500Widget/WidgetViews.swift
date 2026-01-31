@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WidgetKit
 import Charts
 
 // MARK: - Small Widget View
@@ -328,3 +329,92 @@ private func formatPercent(_ value: Double) -> String {
     LargeWidgetView(entry: .preview)
         .frame(width: 338, height: 354)
 }
+
+// MARK: - Lock Screen Widgets (iOS only)
+
+#if os(iOS)
+
+/// Circular Lock Screen widget - shows price change indicator
+struct AccessoryCircularView: View {
+    let entry: StockEntry
+
+    var body: some View {
+        ZStack {
+            AccessoryWidgetBackground()
+
+            VStack(spacing: 0) {
+                // Symbol
+                Text(entry.symbol)
+                    .font(.system(size: 10, weight: .semibold))
+                    .minimumScaleFactor(0.8)
+
+                // Change indicator
+                Image(systemName: entry.isPositive ? "arrow.up" : "arrow.down")
+                    .font(.system(size: 14, weight: .bold))
+
+                // Percent change
+                Text(formatPercentCompact(entry.percentChange))
+                    .font(.system(size: 10, weight: .medium))
+                    .minimumScaleFactor(0.8)
+            }
+        }
+    }
+
+    private func formatPercentCompact(_ value: Double) -> String {
+        let prefix = value >= 0 ? "+" : ""
+        return "\(prefix)\(String(format: "%.1f", value))%"
+    }
+}
+
+/// Rectangular Lock Screen widget - shows price and change
+struct AccessoryRectangularView: View {
+    let entry: StockEntry
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            // Symbol and name
+            HStack {
+                Text(entry.symbol)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+
+                Spacer()
+
+                // Change arrow
+                Image(systemName: entry.isPositive ? "arrow.up.right" : "arrow.down.right")
+                    .font(.caption)
+                    .foregroundStyle(entry.isPositive ? .green : .red)
+            }
+
+            // Price
+            Text(formatCurrencyCompact(entry.price))
+                .font(.system(.title3, design: .rounded))
+                .fontWeight(.medium)
+
+            // Change details
+            HStack(spacing: 4) {
+                Text(formatChangeCompact(entry.priceChange))
+                Text("(\(formatPercentCompact(entry.percentChange)))")
+            }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func formatCurrencyCompact(_ value: Double) -> String {
+        return String(format: "$%.2f", value)
+    }
+
+    private func formatChangeCompact(_ value: Double) -> String {
+        let prefix = value >= 0 ? "+" : ""
+        return "\(prefix)\(String(format: "%.2f", value))"
+    }
+
+    private func formatPercentCompact(_ value: Double) -> String {
+        let prefix = value >= 0 ? "+" : ""
+        return "\(prefix)\(String(format: "%.2f", value))%"
+    }
+}
+
+#endif
