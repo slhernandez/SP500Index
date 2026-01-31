@@ -9,8 +9,35 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = StockViewModel()
+    #if os(iOS)
+    @State private var showSettings = false
+    #endif
 
     var body: some View {
+        #if os(iOS)
+        NavigationStack {
+            mainContent
+                .navigationTitle(viewModel.currentQuote?.symbol ?? "S&P 500")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showSettings = true
+                        } label: {
+                            Image(systemName: "gear")
+                        }
+                    }
+                }
+                .sheet(isPresented: $showSettings) {
+                    SettingsView()
+                }
+        }
+        #else
+        mainContent
+        #endif
+    }
+
+    private var mainContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 // Quote header

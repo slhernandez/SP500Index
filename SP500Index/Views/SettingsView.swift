@@ -9,9 +9,33 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("refreshInterval") private var refreshIntervalMinutes: Int = 5
-    @AppStorage("selectedSymbol") private var selectedSymbol: String = "FXAIX"
+    @AppStorage("selectedSymbol") private var selectedSymbol: String = "^GSPC"
+    #if os(iOS)
+    @Environment(\.dismiss) private var dismiss
+    #endif
 
     var body: some View {
+        #if os(iOS)
+        NavigationStack {
+            settingsForm
+                .navigationTitle("Settings")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            dismiss()
+                        }
+                    }
+                }
+        }
+        #else
+        settingsForm
+            .frame(width: 400, height: 320)
+            .navigationTitle("Settings")
+        #endif
+    }
+
+    private var settingsForm: some View {
         Form {
             Section {
                 Picker("Update Frequency", selection: $refreshIntervalMinutes) {
@@ -65,8 +89,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 400, height: 320)
-        .navigationTitle("Settings")
     }
 }
 
