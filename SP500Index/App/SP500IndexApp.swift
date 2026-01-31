@@ -7,9 +7,16 @@
 
 import SwiftUI
 
+#if os(macOS)
+import AppKit
+#endif
+
 @main
 struct SP500IndexApp: App {
+    #if os(macOS)
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    #endif
+
     @StateObject private var viewModel = StockViewModel()
 
     var body: some Scene {
@@ -17,29 +24,16 @@ struct SP500IndexApp: App {
             ContentView()
                 .environmentObject(viewModel)
         }
+        #if os(macOS)
         .windowStyle(.automatic)
         .defaultSize(width: 500, height: 700)
         .commands {
-            // Replace standard app menu items
             CommandGroup(replacing: .appInfo) {
                 Button("About SP500Index") {
-                    NSApplication.shared.orderFrontStandardAboutPanel(
-                        options: [
-                            .applicationName: "SP500Index",
-                            .applicationVersion: Bundle.main.appVersion,
-                            .credits: NSAttributedString(
-                                string: "S&P 500 Index Fund Tracker\nData provided by Yahoo Finance",
-                                attributes: [
-                                    .font: NSFont.systemFont(ofSize: 11),
-                                    .foregroundColor: NSColor.secondaryLabelColor
-                                ]
-                            )
-                        ]
-                    )
+                    showAboutPanel()
                 }
             }
 
-            // View menu commands
             CommandGroup(after: .toolbar) {
                 Button("Refresh") {
                     Task {
@@ -51,19 +45,39 @@ struct SP500IndexApp: App {
                 Divider()
             }
         }
+        #endif
 
-        // Settings window
+        #if os(macOS)
         Settings {
             SettingsView()
         }
+        #endif
     }
+
+    #if os(macOS)
+    private func showAboutPanel() {
+        NSApplication.shared.orderFrontStandardAboutPanel(
+            options: [
+                .applicationName: "SP500Index",
+                .applicationVersion: Bundle.main.appVersion,
+                .credits: NSAttributedString(
+                    string: "S&P 500 Index Fund Tracker\nData provided by Yahoo Finance",
+                    attributes: [
+                        .font: NSFont.systemFont(ofSize: 11),
+                        .foregroundColor: NSColor.secondaryLabelColor
+                    ]
+                )
+            ]
+        )
+    }
+    #endif
 }
 
-// MARK: - App Delegate
+// MARK: - App Delegate (macOS only)
 
+#if os(macOS)
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Configure app appearance
         NSWindow.allowsAutomaticWindowTabbing = false
     }
 
@@ -75,3 +89,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         true
     }
 }
+#endif
