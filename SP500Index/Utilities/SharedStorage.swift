@@ -28,7 +28,7 @@ struct SharedStorage {
 
     static var selectedSymbol: String {
         get {
-            sharedDefaults?.string(forKey: Keys.selectedSymbol) ?? "FXAIX"
+            sharedDefaults?.string(forKey: Keys.selectedSymbol) ?? "^GSPC"
         }
         set {
             sharedDefaults?.set(newValue, forKey: Keys.selectedSymbol)

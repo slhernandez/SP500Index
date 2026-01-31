@@ -25,7 +25,7 @@ class StockViewModel: ObservableObject {
 
     // Settings
     @AppStorage("refreshInterval") var refreshIntervalMinutes: Int = 5
-    @AppStorage("selectedSymbol") var selectedSymbol: String = "FXAIX"
+    @AppStorage("selectedSymbol") var selectedSymbol: String = "^GSPC"
 
     // MARK: - Constants
 
@@ -85,7 +85,7 @@ class StockViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                let storedSymbol = UserDefaults.standard.string(forKey: "selectedSymbol") ?? "FXAIX"
+                let storedSymbol = UserDefaults.standard.string(forKey: "selectedSymbol") ?? "^GSPC"
                 let loadedSymbol = self.currentQuote?.symbol ?? ""
 
                 if storedSymbol != loadedSymbol && !loadedSymbol.isEmpty {
