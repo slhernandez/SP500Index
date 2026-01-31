@@ -1,22 +1,19 @@
 # SP500Index
 
-  SP500Index is a native macOS desktop application built with SwiftUI for tracking S&P 500 index fund prices. It displays real-time
-  quotes and interactive historical charts for popular index funds including FXAIX, VOO, SPY, and IVV. Features include a desktop
-  widget for at-a-glance price updates, configurable auto-refresh intervals, and support for multiple time ranges from 1 week to 10
-  years. Built entirely with native Apple frameworks—no external dependencies required.
+SP500Index is a native macOS and iPadOS application built with SwiftUI for tracking S&P 500 index fund prices. It displays real-time quotes and interactive historical charts for popular index funds including FXAIX, VOO, SPY, and IVV. Features include desktop and Lock Screen widgets for at-a-glance price updates, configurable auto-refresh intervals, and support for multiple time ranges from 1 week to 10 years. Built entirely with native Apple frameworks—no external dependencies required.
 
 ## Features
 
 - **Real-time price tracking** for S&P 500 index funds (FXAIX, SPY, VOO, IVV)
 - **Interactive historical charts** with 9 time ranges (1 week to 10 years)
-- **Desktop widget** with three sizes for at-a-glance price monitoring
+- **Widgets** - Desktop widgets (macOS) and Home Screen/Lock Screen widgets (iPad)
 - **Auto-refresh** with configurable intervals (1, 5, 20, or 60 minutes)
 - **Market state detection** (regular hours, pre-market, post-market, closed)
-- **Native macOS experience** with keyboard shortcuts and settings window
+- **Cross-platform** - Native experience on both macOS and iPad
 
 ## Requirements
 
-- macOS 14.0+ (Sonoma)
+- macOS 14.0+ (Sonoma) or iPadOS 17.0+
 - Xcode 15.0+ (for building)
 
 ## Installation
@@ -33,17 +30,20 @@ open build/Release/SP500Index.app
 ### Development
 
 ```bash
-# Debug build
-xcodebuild build -scheme SP500Index -configuration Debug
+# Debug build (macOS)
+xcodebuild build -scheme SP500Index -destination 'platform=macOS'
 
-# Build and run
+# Debug build (iPad Simulator)
+xcodebuild build -scheme SP500Index -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)'
+
+# Build and run (macOS)
 xcodebuild build -scheme SP500Index -configuration Debug && open build/Debug/SP500Index.app
 
 # Clean build
 xcodebuild clean -scheme SP500Index
 ```
 
-Or open `SP500Index.xcodeproj` in Xcode.
+Or open `SP500Index.xcodeproj` in Xcode and select your target device.
 
 ## Distribution
 
@@ -120,9 +120,15 @@ No Gatekeeper warnings will appear since the app is signed and notarized.
 
 1. Launch the app to see the current price of FXAIX (Fidelity 500 Index Fund)
 2. Use the time range buttons to view different historical periods
-3. Hover over the chart to see specific data points
-4. Press **Cmd+R** to manually refresh data
-5. Open **Settings** (Cmd+,) to change the tracked symbol or refresh interval
+3. Interact with the chart to see specific data points:
+   - **macOS:** Hover over the chart
+   - **iPad:** Drag across the chart
+4. Refresh data:
+   - **macOS:** Press **Cmd+R** or use the View menu
+   - **iPad:** Pull down to refresh
+5. Change settings:
+   - **macOS:** Open **Settings** (Cmd+,) to change the tracked symbol or refresh interval
+   - **iPad:** Tap the gear icon to access settings
 
 ### Supported Symbols
 
@@ -133,23 +139,32 @@ No Gatekeeper warnings will appear since the app is signed and notarized.
 | VOO | Vanguard S&P 500 ETF |
 | IVV | iShares Core S&P 500 ETF |
 
-## Desktop Widget
+## Widgets
 
-The app includes a macOS desktop widget for monitoring prices at a glance without opening the main app.
+The app includes widgets for both macOS and iPad to monitor prices at a glance without opening the main app.
 
-### Adding the Widget
+### Adding Widgets
 
+**macOS:**
 1. Right-click on your desktop and select "Edit Widgets..."
 2. Search for "S&P 500" in the widget gallery
 3. Drag your preferred widget size to the desktop
 
+**iPad:**
+1. Long-press on the Home Screen and tap the "+" button
+2. Search for "S&P 500" in the widget gallery
+3. Select a widget size and tap "Add Widget"
+4. For Lock Screen widgets: long-press the Lock Screen, tap "Customize", and add to the widget area
+
 ### Widget Sizes
 
-| Size | Display |
-|------|---------|
-| **Small** | Symbol, price, daily change, market status |
-| **Medium** | Price info + mini sparkline chart |
-| **Large** | Full details with chart and stats (Open, High, Low, 52W Range) |
+| Size | Platform | Display |
+|------|----------|---------|
+| **Small** | macOS, iPad | Symbol, price, daily change, market status |
+| **Medium** | macOS, iPad | Price info + mini sparkline chart |
+| **Large** | macOS, iPad | Full details with chart and stats (Open, High, Low, 52W Range) |
+| **Circular** | iPad (Lock Screen) | Symbol, arrow indicator, percent change |
+| **Rectangular** | iPad (Lock Screen) | Symbol, price, change details |
 
 ### How It Works
 
