@@ -44,6 +44,7 @@
 		C1000001233456780000002 /* NewsArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000001233456780000011 /* NewsArticle.swift */; };
 		C1000001233456780000003 /* NewsFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000001233456780000012 /* NewsFeedView.swift */; };
 		D1000001000000000000001 /* MarketCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000000000000011 /* MarketCategory.swift */; };
+		D1000001000000000000002 /* MarketIndicesBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000000000000012 /* MarketIndicesBarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +107,7 @@
 		C1000001233456780000011 /* NewsArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticle.swift; sourceTree = "<group>"; };
 		C1000001233456780000012 /* NewsFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeedView.swift; sourceTree = "<group>"; };
 		D1000001000000000000011 /* MarketCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketCategory.swift; sourceTree = "<group>"; };
+		D1000001000000000000012 /* MarketIndicesBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketIndicesBarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +203,7 @@
 				A100000123345678000001D /* SettingsView.swift */,
 				A1000001233456780000022 /* StatsGridView.swift */,
 				C1000001233456780000012 /* NewsFeedView.swift */,
+				D1000001000000000000012 /* MarketIndicesBarView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -378,6 +381,7 @@
 				A1000001233456780000023 /* SharedStorage.swift in Sources */,
 				A46B72C82F2E9B840045A5CC /* PlatformSupport.swift in Sources */,
 				D1000001000000000000001 /* MarketCategory.swift in Sources */,
+				D1000001000000000000002 /* MarketIndicesBarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
