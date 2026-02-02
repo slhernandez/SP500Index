@@ -22,10 +22,14 @@ class StockViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var lastUpdated: Date?
     @Published var newsArticles: [NewsArticle] = []
+    @Published var indexQuotes: [IndexQuote] = []
+    @Published var isLoadingIndices: Bool = false
+    @Published var displayedSymbol: String? = nil
 
     // Settings
     @AppStorage("refreshInterval") var refreshIntervalMinutes: Int = 5
     @AppStorage("selectedSymbol") var selectedSymbol: String = "^GSPC"
+    @AppStorage("marketCategory") var marketCategory: String = "us"
 
     // MARK: - Constants
 
@@ -53,6 +57,18 @@ class StockViewModel: ObservableObject {
 
     var marketStateText: String {
         currentQuote?.marketState.displayText ?? "Loading..."
+    }
+
+    var effectiveSymbol: String {
+        displayedSymbol ?? selectedSymbol
+    }
+
+    var isViewingNonPrimary: Bool {
+        displayedSymbol != nil && displayedSymbol != selectedSymbol
+    }
+
+    var currentCategory: MarketCategory {
+        MarketCategory(rawValue: marketCategory) ?? .us
     }
 
     // MARK: - Initialization
@@ -104,15 +120,17 @@ class StockViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            async let quoteTask = dataService.fetchQuote(symbol: selectedSymbol)
-            async let historicalTask = dataService.fetchHistoricalData(symbol: selectedSymbol, range: selectedTimeRange)
+            async let quoteTask = dataService.fetchQuote(symbol: effectiveSymbol)
+            async let historicalTask = dataService.fetchHistoricalData(symbol: effectiveSymbol, range: selectedTimeRange)
             async let newsTask = dataService.fetchNews(query: Self.newsQuery)
+            async let indicesTask = dataService.fetchIndexQuotes(for: currentCategory)
 
-            let (quote, historical, news) = try await (quoteTask, historicalTask, newsTask)
+            let (quote, historical, news, indices) = try await (quoteTask, historicalTask, newsTask, indicesTask)
 
             currentQuote = quote
             historicalData = historical
             newsArticles = news
+            indexQuotes = indices
             lastUpdated = Date()
 
             // Persist to shared storage for widget
@@ -134,14 +152,19 @@ class StockViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            let quote = try await dataService.fetchQuote(symbol: selectedSymbol)
+            async let quoteTask = dataService.fetchQuote(symbol: effectiveSymbol)
+            async let indicesTask = dataService.fetchIndexQuotes(for: currentCategory)
+
+            let (quote, indices) = try await (quoteTask, indicesTask)
+
             currentQuote = quote
+            indexQuotes = indices
             lastUpdated = Date()
 
             // Update widget with fresh quote
             SharedStorage.saveQuote(quote)
 
-            // Refresh news
+            // Refresh news (non-critical, don't fail if this fails)
             do {
                 newsArticles = try await dataService.fetchNews(query: Self.newsQuery)
             } catch {
@@ -154,13 +177,69 @@ class StockViewModel: ObservableObject {
         isRefreshing = false
     }
 
+    func loadMarketIndices() async {
+        guard !isLoadingIndices else { return }
+        isLoadingIndices = true
+
+        do {
+            indexQuotes = try await dataService.fetchIndexQuotes(for: currentCategory)
+        } catch {
+            // Silently fail - indices bar shows placeholder
+            indexQuotes = []
+        }
+
+        isLoadingIndices = false
+    }
+
+    func changeMarketCategory(_ newCategory: String) async {
+        guard newCategory != marketCategory else { return }
+        marketCategory = newCategory
+        await loadMarketIndices()
+    }
+
+    func viewSymbolTemporarily(_ symbol: String) async {
+        guard symbol != effectiveSymbol else { return }
+        displayedSymbol = symbol
+        await dataService.clearCache()
+        await loadDataForSymbol(symbol)
+    }
+
+    func returnToPrimarySymbol() async {
+        guard displayedSymbol != nil else { return }
+        displayedSymbol = nil
+        await dataService.clearCache()
+        await loadDataForSymbol(selectedSymbol)
+    }
+
+    private func loadDataForSymbol(_ symbol: String) async {
+        isLoading = true
+        errorMessage = nil
+
+        do {
+            async let quoteTask = dataService.fetchQuote(symbol: symbol)
+            async let historicalTask = dataService.fetchHistoricalData(symbol: symbol, range: selectedTimeRange)
+
+            let (quote, historical) = try await (quoteTask, historicalTask)
+
+            currentQuote = quote
+            historicalData = historical
+            lastUpdated = Date()
+
+            persistToSharedStorage(quote: quote, historicalData: historical)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+
+        isLoading = false
+    }
+
     func changeTimeRange(_ range: TimeRange) async {
         // Note: selectedTimeRange is already updated via binding from TimeRangeSelectorView
         isLoading = true
         errorMessage = nil
 
         do {
-            let historical = try await dataService.fetchHistoricalData(symbol: selectedSymbol, range: range)
+            let historical = try await dataService.fetchHistoricalData(symbol: effectiveSymbol, range: range)
             historicalData = historical
 
             // Update widget with fresh historical data
