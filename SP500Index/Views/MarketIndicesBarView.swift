@@ -141,8 +141,8 @@ struct IndexChip: View {
                 }
                 .foregroundColor(quote.isPositive ? stockGreen : stockRed)
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 6)
                     .fill(Color.secondary.opacity(0.1))
@@ -179,8 +179,8 @@ struct IndexChipPlaceholder: View {
             Text("--.--")
                 .font(.caption)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 6)
                 .fill(Color.secondary.opacity(0.1))
