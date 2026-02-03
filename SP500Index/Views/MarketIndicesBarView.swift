@@ -55,13 +55,9 @@ struct MarketIndicesBarView: View {
                     }
                 }
             }
-
-            Spacer()
         }
-        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(Color.secondary.opacity(0.05))
-        .cornerRadius(8)
     }
 }
 
