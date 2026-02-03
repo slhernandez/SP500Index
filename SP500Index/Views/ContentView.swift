@@ -40,6 +40,28 @@ struct ContentView: View {
     private var mainContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                // Market indices overview bar
+                MarketIndicesBarView(
+                    indexQuotes: viewModel.indexQuotes,
+                    selectedCategory: viewModel.currentCategory,
+                    isLoading: viewModel.isLoadingIndices,
+                    onCategoryChange: { category in
+                        await viewModel.changeMarketCategory(category)
+                    },
+                    onIndexTap: { symbol in
+                        await viewModel.viewSymbolTemporarily(symbol)
+                    }
+                )
+
+                // Return to primary banner (only when viewing non-primary)
+                if viewModel.isViewingNonPrimary {
+                    ReturnToPrimaryBanner(
+                        primarySymbol: viewModel.selectedSymbol
+                    ) {
+                        await viewModel.returnToPrimarySymbol()
+                    }
+                }
+
                 // Quote header
                 QuoteHeaderView(
                     quote: viewModel.currentQuote,
@@ -76,6 +98,15 @@ struct ContentView: View {
         .scrollIndicators(.hidden)
         #if os(macOS)
         .frame(minWidth: 400, minHeight: 750)
+        .onKeyPress(.escape) {
+            if viewModel.isViewingNonPrimary {
+                Task {
+                    await viewModel.returnToPrimarySymbol()
+                }
+                return .handled
+            }
+            return .ignored
+        }
         #endif
         .background(PlatformSupport.systemBackground)
         .overlay {

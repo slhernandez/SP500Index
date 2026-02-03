@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("refreshInterval") private var refreshIntervalMinutes: Int = 5
     @AppStorage("selectedSymbol") private var selectedSymbol: String = "^GSPC"
+    @AppStorage("marketCategory") private var marketCategory: String = "us"
     #if os(iOS)
     @Environment(\.dismiss) private var dismiss
     #endif
@@ -30,7 +31,7 @@ struct SettingsView: View {
         }
         #else
         settingsForm
-            .frame(width: 400, height: 320)
+            .frame(width: 400, height: 400)
             .navigationTitle("Settings")
         #endif
     }
@@ -51,6 +52,22 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
             } header: {
                 Text("Refresh")
+            }
+
+            Section {
+                Picker("Default Category", selection: $marketCategory) {
+                    ForEach(MarketCategory.allCases) { category in
+                        Text(category.displayName)
+                            .tag(category.rawValue)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                Text("Select which market indices to display in the overview bar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("Market Overview")
             }
 
             Section {

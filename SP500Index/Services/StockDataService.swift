@@ -99,6 +99,34 @@ actor StockDataService: StockDataServiceProtocol {
         cachedNews.removeAll()
     }
 
+    #if !WIDGET_EXTENSION
+    func fetchIndexQuotes(for category: MarketCategory) async throws -> [IndexQuote] {
+        let indices = category.indices
+
+        return try await withThrowingTaskGroup(of: (Int, IndexQuote?).self) { group in
+            for (index, marketIndex) in indices.enumerated() {
+                group.addTask {
+                    do {
+                        let quote = try await self.fetchQuote(symbol: marketIndex.symbol)
+                        return (index, IndexQuote(from: quote, index: marketIndex))
+                    } catch {
+                        // Graceful partial failure - return nil for failed fetches
+                        return (index, nil)
+                    }
+                }
+            }
+
+            var results = [(Int, IndexQuote?)]()
+            for try await result in group {
+                results.append(result)
+            }
+
+            // Sort by original index and filter out failures
+            return results.sorted { $0.0 < $1.0 }.compactMap { $0.1 }
+        }
+    }
+    #endif
+
     func fetchNews(query: String) async throws -> [NewsArticle] {
         // Check cache
         if let cached = cachedNews[query],
