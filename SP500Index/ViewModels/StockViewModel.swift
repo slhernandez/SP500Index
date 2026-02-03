@@ -31,10 +31,6 @@ class StockViewModel: ObservableObject {
     @AppStorage("selectedSymbol") var selectedSymbol: String = "^GSPC"
     @AppStorage("marketCategory") var marketCategory: String = "us"
 
-    // MARK: - Constants
-
-    private static let newsQuery = "S&P 500"
-
     // MARK: - Private Properties
 
     private let dataService: StockDataService
@@ -125,7 +121,7 @@ class StockViewModel: ObservableObject {
         do {
             async let quoteTask = dataService.fetchQuote(symbol: effectiveSymbol)
             async let historicalTask = dataService.fetchHistoricalData(symbol: effectiveSymbol, range: selectedTimeRange)
-            async let newsTask = dataService.fetchNews(query: Self.newsQuery)
+            async let newsTask = dataService.fetchNews(query: effectiveSymbol)
             async let indicesTask = dataService.fetchIndexQuotes(for: currentCategory)
 
             let (quote, historical, news, indices) = try await (quoteTask, historicalTask, newsTask, indicesTask)
@@ -169,7 +165,7 @@ class StockViewModel: ObservableObject {
 
             // Refresh news (non-critical, don't fail if this fails)
             do {
-                newsArticles = try await dataService.fetchNews(query: Self.newsQuery)
+                newsArticles = try await dataService.fetchNews(query: effectiveSymbol)
             } catch {
                 print("News refresh failed: \(error.localizedDescription)")
             }
