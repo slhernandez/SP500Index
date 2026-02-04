@@ -32,6 +32,7 @@ struct ContentView: View {
                     SettingsView()
                 }
         }
+        .background(PlatformSupport.systemBackground.ignoresSafeArea())
         #else
         mainContent
         #endif
@@ -108,7 +109,7 @@ struct ContentView: View {
             return .ignored
         }
         #endif
-        .background(PlatformSupport.systemBackground)
+        .background(PlatformSupport.systemBackground.ignoresSafeArea())
         .overlay {
             // Loading overlay
             if viewModel.isLoading {
