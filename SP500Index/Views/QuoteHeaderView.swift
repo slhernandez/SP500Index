@@ -20,6 +20,8 @@ struct QuoteHeaderView: View {
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
 
                 Spacer()
 
@@ -34,6 +36,7 @@ struct QuoteHeaderView: View {
             Text(currentPriceText)
                 .font(.system(size: 48, weight: .medium, design: .default))
                 .foregroundColor(.primary)
+                .minimumScaleFactor(0.8)
                 .contentTransition(.numericText())
 
             // Change values

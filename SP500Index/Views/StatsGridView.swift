@@ -10,15 +10,35 @@ import SwiftUI
 struct StatsGridView: View {
     let quote: StockQuote?
 
-    private let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) var sizeClass
+    #endif
+
+    private var useCompactLayout: Bool {
+        #if os(iOS)
+        return sizeClass == .compact
+        #else
+        return false
+        #endif
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            if useCompactLayout {
+                compactGrid
+            } else {
+                regularGrid
+            }
+        }
+        .padding(.vertical, 8)
+        .background(Color.secondary.opacity(0.05))
+        .cornerRadius(8)
+    }
+
+    // MARK: - Layouts
+
+    private var regularGrid: some View {
+        VStack(spacing: 0) {
             // Row 1: Open, Vol, 52W H, Yield
             HStack(spacing: 0) {
                 StatCell(label: "Open", value: formatPrice(quote?.open))
@@ -56,9 +76,46 @@ struct StatsGridView: View {
                 StatCell(label: "EPS", value: formatDecimal(quote?.eps))
             }
         }
-        .padding(.vertical, 8)
-        .background(Color.secondary.opacity(0.05))
-        .cornerRadius(8)
+    }
+
+    private var compactGrid: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                StatCell(label: "Open", value: formatPrice(quote?.open))
+                Divider().frame(height: 40)
+                StatCell(label: "High", value: formatPrice(quote?.dayHigh))
+            }
+            Divider()
+            HStack(spacing: 0) {
+                StatCell(label: "Low", value: formatPrice(quote?.dayLow))
+                Divider().frame(height: 40)
+                StatCell(label: "Vol", value: formatVolume(quote?.volume))
+            }
+            Divider()
+            HStack(spacing: 0) {
+                StatCell(label: "52W H", value: formatPrice(quote?.fiftyTwoWeekHigh))
+                Divider().frame(height: 40)
+                StatCell(label: "52W L", value: formatPrice(quote?.fiftyTwoWeekLow))
+            }
+            Divider()
+            HStack(spacing: 0) {
+                StatCell(label: "P/E", value: formatDecimal(quote?.peRatio))
+                Divider().frame(height: 40)
+                StatCell(label: "Mkt Cap", value: formatMarketCap(quote?.marketCap))
+            }
+            Divider()
+            HStack(spacing: 0) {
+                StatCell(label: "Yield", value: formatPercent(quote?.dividendYield))
+                Divider().frame(height: 40)
+                StatCell(label: "Beta", value: formatDecimal(quote?.beta))
+            }
+            Divider()
+            HStack(spacing: 0) {
+                StatCell(label: "Avg Vol", value: formatVolume(quote?.avgVolume))
+                Divider().frame(height: 40)
+                StatCell(label: "EPS", value: formatDecimal(quote?.eps))
+            }
+        }
     }
 
     // MARK: - Formatters
