@@ -97,6 +97,11 @@ struct ContentView: View {
             .padding(20)
         }
         .scrollIndicators(.hidden)
+        #if os(iOS)
+        .refreshable {
+            await viewModel.manualRefresh()
+        }
+        #endif
         #if os(macOS)
         .frame(minWidth: 400, minHeight: 750)
         .onKeyPress(.escape) {

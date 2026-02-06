@@ -7,12 +7,18 @@
 
 import SwiftUI
 import Charts
+#if os(iOS)
+import UIKit
+#endif
 
 struct ChartView: View {
     let historicalData: HistoricalData?
     let timeRange: TimeRange
     @State private var selectedDataPoint: HistoricalDataPoint?
     @State private var plotWidth: CGFloat = 0
+    #if os(iOS)
+    @State private var previousSelectedPointDate: Date?
+    #endif
 
     @Environment(\.accessibilityReduceMotion) var reduceMotion
 
@@ -106,6 +112,9 @@ struct ChartView: View {
                                 }
                                 .onEnded { _ in
                                     selectedDataPoint = nil
+                                    #if os(iOS)
+                                    previousSelectedPointDate = nil
+                                    #endif
                                 }
                         )
                         #if os(macOS)
@@ -161,6 +170,13 @@ struct ChartView: View {
         }
 
         selectedDataPoint = closestPoint
+
+        #if os(iOS)
+        if let point = closestPoint, point.date != previousSelectedPointDate {
+            previousSelectedPointDate = point.date
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }
+        #endif
     }
 }
 
