@@ -137,6 +137,10 @@ class StockViewModel: ObservableObject {
 
             // Start auto-refresh after initial load
             refreshManager.start()
+        } catch is CancellationError {
+            // Task cancelled (e.g., by SwiftUI view lifecycle), don't show error
+        } catch let error as URLError where error.code == .cancelled {
+            // URL request cancelled, don't show error
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -169,6 +173,10 @@ class StockViewModel: ObservableObject {
             } catch {
                 print("News refresh failed: \(error.localizedDescription)")
             }
+        } catch is CancellationError {
+            // Task cancelled (e.g., by SwiftUI refreshable), don't show error
+        } catch let error as URLError where error.code == .cancelled {
+            // URL request cancelled, don't show error
         } catch {
             errorMessage = error.localizedDescription
         }

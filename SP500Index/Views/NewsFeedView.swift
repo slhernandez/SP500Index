@@ -10,10 +10,21 @@ import SwiftUI
 struct NewsFeedView: View {
     let articles: [NewsArticle]
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) var sizeClass
+    #endif
+
+    private var columns: [GridItem] {
+        #if os(iOS)
+        if sizeClass == .compact {
+            return [GridItem(.flexible(), spacing: 16)]
+        }
+        #endif
+        return [
+            GridItem(.flexible(), spacing: 16),
+            GridItem(.flexible(), spacing: 16)
+        ]
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {

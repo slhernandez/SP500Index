@@ -26,6 +26,14 @@ struct MarketIndicesBarView: View {
         #endif
     }
 
+    private var useCompactLayout: Bool {
+        #if os(iOS)
+        return sizeClass == .compact
+        #else
+        return false
+        #endif
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             // Category dropdown
@@ -37,7 +45,7 @@ struct MarketIndicesBarView: View {
             // Index chips
             if isLoading {
                 ForEach(0..<3, id: \.self) { _ in
-                    IndexChipPlaceholder()
+                    IndexChipPlaceholder(useCompactLayout: useCompactLayout)
                 }
             } else if indexQuotes.isEmpty {
                 Text("Unable to load indices")
@@ -47,7 +55,8 @@ struct MarketIndicesBarView: View {
                 ForEach(indexQuotes) { quote in
                     IndexChip(
                         quote: quote,
-                        useShortName: useShortNames
+                        useShortName: useShortNames,
+                        useCompactLayout: useCompactLayout
                     ) {
                         Task {
                             await onIndexTap(quote.symbol)
@@ -107,6 +116,7 @@ struct CategoryDropdown: View {
 struct IndexChip: View {
     let quote: IndexQuote
     let useShortName: Bool
+    var useCompactLayout: Bool = false
     let onTap: () -> Void
 
     private var stockGreen: Color {
@@ -119,38 +129,85 @@ struct IndexChip: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 6) {
-                Text(useShortName ? quote.shortName : quote.displayName)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .lineLimit(1)
-
-                Text(formatPrice(quote.currentPrice))
-                    .font(.caption)
-                    .lineLimit(1)
-
-                HStack(spacing: 2) {
-                    Image(systemName: quote.isPositive ? "arrow.up" : "arrow.down")
-                        .font(.caption2)
-                    Text(formatPercent(quote.percentChange))
-                        .font(.caption)
-                }
-                .foregroundColor(quote.isPositive ? stockGreen : stockRed)
+            if useCompactLayout {
+                compactContent
+            } else {
+                horizontalContent
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(Color.secondary.opacity(0.1))
-            )
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(quote.displayName), \(formatPrice(quote.currentPrice)), \(quote.isPositive ? "up" : "down") \(formatPercent(quote.percentChange))")
     }
 
+    private var horizontalContent: some View {
+        HStack(spacing: 6) {
+            Text(useShortName ? quote.shortName : quote.displayName)
+                .font(.caption)
+                .fontWeight(.medium)
+                .lineLimit(1)
+
+            Text(formatPrice(quote.currentPrice))
+                .font(.caption)
+                .lineLimit(1)
+
+            HStack(spacing: 2) {
+                Image(systemName: quote.isPositive ? "arrow.up" : "arrow.down")
+                    .font(.caption2)
+                Text(formatPercent(quote.percentChange))
+                    .font(.caption)
+            }
+            .foregroundColor(quote.isPositive ? stockGreen : stockRed)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.1))
+        )
+    }
+
+    private var compactContent: some View {
+        VStack(spacing: 2) {
+            Text(quote.shortName)
+                .font(.caption)
+                .fontWeight(.semibold)
+
+            Text(formatCompactPrice(quote.currentPrice))
+                .font(.caption)
+
+            HStack(spacing: 2) {
+                Image(systemName: quote.isPositive ? "arrow.up" : "arrow.down")
+                    .font(.caption2)
+                Text(formatPercent(quote.percentChange))
+                    .font(.caption2)
+            }
+            .foregroundColor(quote.isPositive ? stockGreen : stockRed)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.1))
+        )
+    }
+
     private func formatPrice(_ price: Double) -> String {
         if price >= 1000 {
             return String(format: "%.2f", price)
+        } else if price >= 1 {
+            return String(format: "%.2f", price)
+        } else {
+            return String(format: "%.4f", price)
+        }
+    }
+
+    private func formatCompactPrice(_ price: Double) -> String {
+        if price >= 1000 {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.maximumFractionDigits = 0
+            return formatter.string(from: NSNumber(value: price)) ?? String(format: "%.0f", price)
         } else if price >= 1 {
             return String(format: "%.2f", price)
         } else {
@@ -166,22 +223,44 @@ struct IndexChip: View {
 // MARK: - Placeholder
 
 struct IndexChipPlaceholder: View {
+    var useCompactLayout: Bool = false
+
     var body: some View {
-        HStack(spacing: 6) {
-            Text("Loading")
-                .font(.caption)
-            Text("---.--")
-                .font(.caption)
-            Text("--.--")
-                .font(.caption)
+        if useCompactLayout {
+            VStack(spacing: 2) {
+                Text("IDX")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                Text("0,000")
+                    .font(.caption)
+                Text("0.00%")
+                    .font(.caption2)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.secondary.opacity(0.1))
+            )
+            .redacted(reason: .placeholder)
+        } else {
+            HStack(spacing: 6) {
+                Text("Loading")
+                    .font(.caption)
+                Text("---.--")
+                    .font(.caption)
+                Text("--.--")
+                    .font(.caption)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.secondary.opacity(0.1))
+            )
+            .redacted(reason: .placeholder)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color.secondary.opacity(0.1))
-        )
-        .redacted(reason: .placeholder)
     }
 }
 
