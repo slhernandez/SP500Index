@@ -388,7 +388,7 @@ struct AccessoryRectangularView: View {
 
             // Price
             Text(formatCurrencyCompact(entry.price))
-                .font(.system(.title3, design: .rounded))
+                .font(.system(.body, design: .rounded))
                 .fontWeight(.medium)
 
             // Change details
