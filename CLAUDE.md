@@ -4,20 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SP500Index is a macOS desktop application (SwiftUI) that displays current prices, historical charts, and market news for S&P 500 index funds. It tracks FXAIX (Fidelity 500 Index Fund) by default, with support for SPY, VOO, IVV, and ^GSPC (S&P 500 Index). Includes a desktop widget for at-a-glance price monitoring.
+SP500Index is a macOS, iPhone, and iPad application (SwiftUI) that displays current prices, historical charts, and market news for S&P 500 index funds. It tracks FXAIX (Fidelity 500 Index Fund) by default, with support for SPY, VOO, IVV, and ^GSPC (S&P 500 Index). Includes desktop and Home Screen/Lock Screen widgets for at-a-glance price monitoring.
 
-**Requirements:** macOS 14.0+ (Sonoma), Xcode 15.0+, Swift 5.9+
+**Requirements:** macOS 14.0+ (Sonoma) or iOS/iPadOS 17.0+, Xcode 15.0+, Swift 5.9+
 
 ## Build Commands
 
 ```bash
-# Build
+# Build (macOS)
 xcodebuild build -scheme SP500Index -configuration Debug
+
+# Build (iPhone Simulator)
+xcodebuild build -scheme SP500Index -destination 'platform=iOS Simulator,name=iPhone 17'
 
 # Clean
 xcodebuild clean -scheme SP500Index
 
-# Build and run
+# Build and run (macOS)
 xcodebuild build -scheme SP500Index -configuration Debug && open build/Debug/SP500Index.app
 
 # Build signed + notarized DMG for distribution
@@ -40,11 +43,11 @@ SP500Index/
 ├── Utilities/            # Formatters, SharedStorage (App Groups)
 └── Resources/
 
-SP500Widget/              # Desktop widget extension
+SP500Widget/              # Widget extension (desktop, Home Screen, Lock Screen)
 ├── SP500Widget.swift     # Widget entry point (@main)
 ├── TimelineProvider.swift# Timeline and refresh scheduling
 ├── StockEntry.swift      # Timeline entry model
-├── WidgetViews.swift     # Small/Medium/Large widget views
+├── WidgetViews.swift     # Small/Medium/Large + Lock Screen widget views
 └── Colors.swift          # Widget color definitions
 
 scripts/
@@ -80,6 +83,7 @@ scripts/
 | `ViewModels/StockViewModel.swift` | Central state management, coordinates refresh and data loading |
 | `Models/TimeRange.swift` | Defines 10 time periods (1D to 10Y) with Yahoo API parameter mappings |
 | `Models/NewsArticle.swift` | News article model with relative time formatting |
+| `Views/MarketIndicesBarView.swift` | Market indices bar with adaptive layout (compact cards on iPhone) |
 | `Views/ChartView.swift` | Interactive chart with drag/hover gestures using SwiftUI Charts |
 | `Views/NewsFeedView.swift` | 2-column news grid with clickable headlines |
 | `Utilities/SharedStorage.swift` | App Groups storage for widget data sharing |
@@ -107,12 +111,14 @@ No API key required. User-Agent header set to avoid blocking.
 | IVV | iShares Core S&P 500 ETF | Throughout trading hours |
 | ^GSPC | S&P 500 Index | Once daily at market close |
 
-## Desktop Widget
+## Widgets
 
-Three widget sizes supported:
-- **Small**: Symbol, price, daily change, market status
-- **Medium**: Price info + mini sparkline chart
-- **Large**: Full details with chart and stats
+Five widget sizes supported across platforms:
+- **Small** (macOS, iPhone, iPad): Symbol, price, daily change, market status
+- **Medium** (macOS, iPhone, iPad): Price info + mini sparkline chart
+- **Large** (macOS, iPhone, iPad): Full details with chart and stats
+- **Circular** (iPhone, iPad Lock Screen): Symbol, arrow indicator, percent change
+- **Rectangular** (iPhone, iPad Lock Screen): Symbol, price, change details
 
 Widget refresh schedule:
 - Market hours (9:30 AM - 4:00 PM ET): Every 15 minutes
@@ -161,7 +167,9 @@ git push origin v1.0.0
 - Stock green: `Color(red: 0.2, green: 0.78, blue: 0.35)`
 - Stock red: `Color(red: 1.0, green: 0.27, blue: 0.23)`
 
-**Window:** Min 400x750 (increased for news section)
+**Window (macOS):** Min 400x750 (increased for news section)
+
+**iPhone layout:** Uses `horizontalSizeClass == .compact` to switch to compact layouts (vertical market index cards, adapted spacing)
 
 **Bundle ID:** `com.steveh.SP500Index`
 
