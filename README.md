@@ -1,19 +1,19 @@
 # SP500Index
 
-SP500Index is a native macOS and iPadOS application built with SwiftUI for tracking S&P 500 index fund prices. It displays real-time quotes and interactive historical charts for popular index funds including FXAIX, VOO, SPY, and IVV. Features include desktop and Lock Screen widgets for at-a-glance price updates, configurable auto-refresh intervals, and support for multiple time ranges from 1 week to 10 years. Built entirely with native Apple frameworks—no external dependencies required.
+SP500Index is a native macOS, iPadOS, and iOS application built with SwiftUI for tracking S&P 500 index fund prices. It displays real-time quotes and interactive historical charts for popular index funds including FXAIX, VOO, SPY, and IVV. Features include desktop and Lock Screen widgets for at-a-glance price updates, configurable auto-refresh intervals, and support for multiple time ranges from 1 week to 10 years. Built entirely with native Apple frameworks—no external dependencies required.
 
 ## Features
 
 - **Real-time price tracking** for S&P 500 index funds (FXAIX, SPY, VOO, IVV)
 - **Interactive historical charts** with 9 time ranges (1 week to 10 years)
-- **Widgets** - Desktop widgets (macOS) and Home Screen/Lock Screen widgets (iPad)
+- **Widgets** - Desktop widgets (macOS) and Home Screen/Lock Screen widgets (iPhone, iPad)
 - **Auto-refresh** with configurable intervals (1, 5, 20, or 60 minutes)
 - **Market state detection** (regular hours, pre-market, post-market, closed)
-- **Cross-platform** - Native experience on both macOS and iPad
+- **Cross-platform** - Native experience on macOS, iPhone, and iPad
 
 ## Requirements
 
-- macOS 14.0+ (Sonoma) or iPadOS 17.0+
+- macOS 14.0+ (Sonoma) or iOS/iPadOS 17.0+
 - Xcode 15.0+ (for building)
 
 ## Installation
@@ -32,6 +32,9 @@ open build/Release/SP500Index.app
 ```bash
 # Debug build (macOS)
 xcodebuild build -scheme SP500Index -destination 'platform=macOS'
+
+# Debug build (iPhone Simulator)
+xcodebuild build -scheme SP500Index -destination 'platform=iOS Simulator,name=iPhone 17'
 
 # Debug build (iPad Simulator)
 xcodebuild build -scheme SP500Index -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)'
@@ -122,13 +125,13 @@ No Gatekeeper warnings will appear since the app is signed and notarized.
 2. Use the time range buttons to view different historical periods
 3. Interact with the chart to see specific data points:
    - **macOS:** Hover over the chart
-   - **iPad:** Drag across the chart
+   - **iPhone/iPad:** Drag across the chart
 4. Refresh data:
    - **macOS:** Press **Cmd+R** or use the View menu
-   - **iPad:** Pull down to refresh
+   - **iPhone/iPad:** Pull down to refresh
 5. Change settings:
    - **macOS:** Open **Settings** (Cmd+,) to change the tracked symbol or refresh interval
-   - **iPad:** Tap the gear icon to access settings
+   - **iPhone/iPad:** Tap the gear icon to access settings
 
 ### Supported Symbols
 
@@ -141,7 +144,7 @@ No Gatekeeper warnings will appear since the app is signed and notarized.
 
 ## Widgets
 
-The app includes widgets for both macOS and iPad to monitor prices at a glance without opening the main app.
+The app includes widgets for macOS, iPhone, and iPad to monitor prices at a glance without opening the main app.
 
 ### Adding Widgets
 
@@ -150,7 +153,7 @@ The app includes widgets for both macOS and iPad to monitor prices at a glance w
 2. Search for "S&P 500" in the widget gallery
 3. Drag your preferred widget size to the desktop
 
-**iPad:**
+**iPhone/iPad:**
 1. Long-press on the Home Screen and tap the "+" button
 2. Search for "S&P 500" in the widget gallery
 3. Select a widget size and tap "Add Widget"
@@ -160,11 +163,11 @@ The app includes widgets for both macOS and iPad to monitor prices at a glance w
 
 | Size | Platform | Display |
 |------|----------|---------|
-| **Small** | macOS, iPad | Symbol, price, daily change, market status |
-| **Medium** | macOS, iPad | Price info + mini sparkline chart |
-| **Large** | macOS, iPad | Full details with chart and stats (Open, High, Low, 52W Range) |
-| **Circular** | iPad (Lock Screen) | Symbol, arrow indicator, percent change |
-| **Rectangular** | iPad (Lock Screen) | Symbol, price, change details |
+| **Small** | macOS, iPhone, iPad | Symbol, price, daily change, market status |
+| **Medium** | macOS, iPhone, iPad | Price info + mini sparkline chart |
+| **Large** | macOS, iPhone, iPad | Full details with chart and stats (Open, High, Low, 52W Range) |
+| **Circular** | iPhone, iPad (Lock Screen) | Symbol, arrow indicator, percent change |
+| **Rectangular** | iPhone, iPad (Lock Screen) | Symbol, price, change details |
 
 ### How It Works
 
