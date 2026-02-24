@@ -9,24 +9,21 @@ import SwiftUI
 
 #if os(macOS)
 import AppKit
-#elseif os(iOS)
-import UIKit
 #endif
+
+extension Notification.Name {
+    static let manualRefreshRequested = Notification.Name("manualRefreshRequested")
+}
 
 @main
 struct SP500IndexApp: App {
     #if os(macOS)
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    #elseif os(iOS)
-    @UIApplicationDelegateAdaptor(iOSAppDelegate.self) var appDelegate
     #endif
-
-    @StateObject private var viewModel = StockViewModel()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(viewModel)
         }
         #if os(macOS)
         .windowStyle(.automatic)
@@ -40,9 +37,7 @@ struct SP500IndexApp: App {
 
             CommandGroup(after: .toolbar) {
                 Button("Refresh") {
-                    Task {
-                        await viewModel.manualRefresh()
-                    }
+                    NotificationCenter.default.post(name: .manualRefreshRequested, object: nil)
                 }
                 .keyboardShortcut("r", modifiers: .command)
 
@@ -91,44 +86,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
         true
-    }
-}
-#endif
-
-// MARK: - App Delegate (iOS)
-
-#if os(iOS)
-class iOSAppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        let config = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
-        config.delegateClass = iOSSceneDelegate.self
-        return config
-    }
-}
-
-class iOSSceneDelegate: NSObject, UIWindowSceneDelegate {
-    var window: UIWindow?
-
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = scene as? UIWindowScene else { return }
-
-        // Set window background color to prevent black edges in safe areas
-        DispatchQueue.main.async {
-            for window in windowScene.windows {
-                window.backgroundColor = .systemBackground
-            }
-        }
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        guard let windowScene = scene as? UIWindowScene else { return }
-
-        // Ensure background color is set after scene becomes active
-        for window in windowScene.windows {
-            if window.backgroundColor == nil {
-                window.backgroundColor = .systemBackground
-            }
-        }
     }
 }
 #endif

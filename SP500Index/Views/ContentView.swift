@@ -133,6 +133,13 @@ struct ContentView: View {
         .task {
             await viewModel.loadInitialData()
         }
+        #if os(macOS)
+        .onReceive(NotificationCenter.default.publisher(for: .manualRefreshRequested)) { _ in
+            Task {
+                await viewModel.manualRefresh()
+            }
+        }
+        #endif
         .onDisappear {
             viewModel.stopAutoRefresh()
         }
