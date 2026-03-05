@@ -11,6 +11,7 @@ struct QuoteHeaderView: View {
     let quote: StockQuote?
     let lastUpdated: Date?
     let isRefreshing: Bool
+    var investedAmount: Double = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -55,6 +56,19 @@ struct QuoteHeaderView: View {
                 if let quote = quote {
                     MarketStateBadge(state: quote.marketState)
                 }
+            }
+
+            // Investment gain/loss
+            if investedAmount > 0, let quote = quote {
+                let gainLoss = investedAmount * (quote.percentChange / 100)
+                let currentValue = investedAmount + gainLoss
+                HStack(spacing: 4) {
+                    Text("\(NumberFormatters.formatCurrency(investedAmount)) invested \u{2192} \(NumberFormatters.formatCurrency(currentValue))")
+                        .foregroundColor(.secondary)
+                    Text("(\(NumberFormatters.formatChange(gainLoss)) / \(NumberFormatters.formatPercent(quote.percentChange)))")
+                        .foregroundColor(quote.isPositive ? .stockGreen : .stockRed)
+                }
+                .font(.subheadline)
             }
 
             // Last updated timestamp
