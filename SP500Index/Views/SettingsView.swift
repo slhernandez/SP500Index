@@ -11,6 +11,7 @@ struct SettingsView: View {
     @AppStorage("refreshInterval") private var refreshIntervalMinutes: Int = 5
     @AppStorage("selectedSymbol") private var selectedSymbol: String = "^GSPC"
     @AppStorage("marketCategory") private var marketCategory: String = "us"
+    @AppStorage("investedAmount") private var investedAmount: Double = 0
     #if os(iOS)
     @Environment(\.dismiss) private var dismiss
     #endif
@@ -31,7 +32,7 @@ struct SettingsView: View {
         }
         #else
         settingsForm
-            .frame(width: 400, height: 400)
+            .frame(width: 400, height: 480)
             .navigationTitle("Settings")
         #endif
     }
@@ -85,6 +86,23 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
             } header: {
                 Text("Data Source")
+            }
+
+            Section {
+                HStack {
+                    Text("$")
+                        .foregroundColor(.secondary)
+                    TextField("Amount", value: $investedAmount, format: .number.precision(.fractionLength(0...2)))
+                        #if os(iOS)
+                        .keyboardType(.decimalPad)
+                        #endif
+                }
+
+                Text("Enter your total invested amount to see dollar gain/loss in the price header and chart summary.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("Investment Tracking")
             }
 
             Section {

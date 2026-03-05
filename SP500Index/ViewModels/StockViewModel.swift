@@ -30,6 +30,7 @@ class StockViewModel: ObservableObject {
     @AppStorage("refreshInterval") var refreshIntervalMinutes: Int = 5
     @AppStorage("selectedSymbol") var selectedSymbol: String = "^GSPC"
     @AppStorage("marketCategory") var marketCategory: String = "us"
+    @AppStorage("investedAmount") var investedAmount: Double = 0
 
     // MARK: - Private Properties
 
