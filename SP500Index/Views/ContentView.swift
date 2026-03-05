@@ -68,7 +68,7 @@ struct ContentView: View {
                     quote: viewModel.currentQuote,
                     lastUpdated: viewModel.lastUpdated,
                     isRefreshing: viewModel.isRefreshing,
-                    investedAmount: viewModel.investedAmount
+                    investedAmount: viewModel.isViewingNonPrimary ? 0 : viewModel.investedAmount
                 )
 
                 Divider()
@@ -85,7 +85,7 @@ struct ContentView: View {
                 ChartView(
                     historicalData: viewModel.historicalData,
                     timeRange: viewModel.selectedTimeRange,
-                    investedAmount: viewModel.investedAmount
+                    investedAmount: viewModel.isViewingNonPrimary ? 0 : viewModel.investedAmount
                 )
                 .clipped()
                 .frame(minHeight: 200)
