@@ -9,6 +9,7 @@ import SwiftUI
 
 #if os(macOS)
 import AppKit
+import SP500IndexUpdates
 #endif
 
 extension Notification.Name {
@@ -19,6 +20,7 @@ extension Notification.Name {
 struct SP500IndexApp: App {
     #if os(macOS)
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    private let updater = AppUpdater()
     #endif
 
     var body: some Scene {
@@ -35,6 +37,11 @@ struct SP500IndexApp: App {
                 }
             }
 
+            CommandGroup(after: .appInfo) {
+                CheckForUpdatesView(appUpdater: updater)
+                Divider()
+            }
+
             CommandGroup(after: .toolbar) {
                 Button("Refresh") {
                     NotificationCenter.default.post(name: .manualRefreshRequested, object: nil)
@@ -48,7 +55,7 @@ struct SP500IndexApp: App {
 
         #if os(macOS)
         Settings {
-            SettingsView()
+            SettingsView(updater: updater)
         }
         #endif
     }

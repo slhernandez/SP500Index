@@ -45,6 +45,7 @@
 		C1000001233456780000003 /* NewsFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000001233456780000012 /* NewsFeedView.swift */; };
 		D1000001000000000000001 /* MarketCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000000000000011 /* MarketCategory.swift */; };
 		D1000001000000000000002 /* MarketIndicesBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000000000000012 /* MarketIndicesBarView.swift */; };
+		E1000001233456780000002 /* SP500IndexUpdates in Frameworks */ = {isa = PBXBuildFile; productRef = E1000001233456780000021 /* SP500IndexUpdates */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +116,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E1000001233456780000002 /* SP500IndexUpdates in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +280,9 @@
 				A47EF2D62F27150B005355ED /* PBXTargetDependency */,
 			);
 			name = SP500Index;
+			packageProductDependencies = (
+				E1000001233456780000021 /* SP500IndexUpdates */,
+			);
 			productName = SP500Index;
 			productReference = A1000001233456780000020 /* SP500Index.app */;
 			productType = "com.apple.product-type.application";
@@ -328,6 +333,9 @@
 				Base,
 			);
 			mainGroup = A1000001233456780000030;
+			packageReferences = (
+				E1000001233456780000031 /* XCLocalSwiftPackageReference "SP500IndexUpdates" */,
+			);
 			productRefGroup = A1000001233456780000032 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -539,10 +547,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SP500Index/SP500Index.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = SP500Index/SP500Index-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = SP500Index/SP500Index-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = SP500Index/SP500Index.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = DEZEJ325BW;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -551,6 +561,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = SP500Index;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				"INFOPLIST_FILE[sdk=macosx*]" = SP500Index/Info-macOS.plist;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -559,9 +570,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.steveh.SP500Index;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SPARKLE_FEED_URL = "https://raw.githubusercontent.com/slhernandez/SP500Index/main/appcast.xml";
+				SPARKLE_PUBLIC_ED_KEY = "Vzk02a5RRsI4u7sI8Tjf8htYbZ1RVNa6ciOg5zxEzwk=";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -575,10 +588,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SP500Index/SP500Index.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = SP500Index/SP500Index-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = SP500Index/SP500Index-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = SP500Index/SP500Index.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = DEZEJ325BW;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -587,6 +602,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = SP500Index;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				"INFOPLIST_FILE[sdk=macosx*]" = SP500Index/Info-macOS.plist;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -595,9 +611,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.steveh.SP500Index;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SPARKLE_FEED_URL = "https://raw.githubusercontent.com/slhernandez/SP500Index/main/appcast.xml";
+				SPARKLE_PUBLIC_ED_KEY = "Vzk02a5RRsI4u7sI8Tjf8htYbZ1RVNa6ciOg5zxEzwk=";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -611,9 +629,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = SP500Widget/SP500Widget.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = SP500Widget/SP500Widget-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = SP500Widget/SP500Widget-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = SP500Widget/SP500Widget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = DEZEJ325BW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -627,7 +647,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.steveh.SP500Index.SP500Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -649,9 +669,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = SP500Widget/SP500Widget.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = SP500Widget/SP500Widget-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = SP500Widget/SP500Widget-iOS.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = SP500Widget/SP500Widget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = DEZEJ325BW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -665,7 +687,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.steveh.SP500Index.SP500Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -713,6 +735,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E1000001233456780000031 /* XCLocalSwiftPackageReference "SP500IndexUpdates" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/SP500IndexUpdates;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E1000001233456780000021 /* SP500IndexUpdates */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1000001233456780000031 /* XCLocalSwiftPackageReference "SP500IndexUpdates" */;
+			productName = SP500IndexUpdates;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A1000001233456780000060 /* Project object */;
 }
