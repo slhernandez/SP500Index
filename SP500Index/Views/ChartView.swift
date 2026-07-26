@@ -13,6 +13,7 @@ import UIKit
 
 struct ChartView: View {
     let historicalData: HistoricalData?
+    let quote: StockQuote?
     let timeRange: TimeRange
     var investedAmount: Double = 0
     @State private var selectedDataPoint: HistoricalDataPoint?
@@ -29,7 +30,7 @@ struct ChartView: View {
             if let selected = selectedDataPoint {
                 SelectedPointView(dataPoint: selected, timeRange: timeRange)
             } else if let data = historicalData {
-                PeriodSummaryView(data: data, investedAmount: investedAmount)
+                PeriodSummaryView(data: data, quote: quote, investedAmount: investedAmount)
             }
 
             // Chart
@@ -144,7 +145,7 @@ struct ChartView: View {
 
     private var lineColor: Color {
         guard let data = historicalData else { return .blue }
-        return data.isPositivePeriod ? .stockGreen : .stockRed
+        return (data.displayPerformance(using: quote)?.isPositive ?? data.isPositivePeriod) ? .stockGreen : .stockRed
     }
 
     private var areaGradient: LinearGradient {
@@ -227,12 +228,13 @@ struct SelectedPointView: View {
 
 struct PeriodSummaryView: View {
     let data: HistoricalData
+    let quote: StockQuote?
     var investedAmount: Double = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                if let change = data.periodChange, let percentChange = data.periodPercentChange {
+                if let performance = data.displayPerformance(using: quote) {
                     Text(data.timeRange.description)
                         .font(.title3)
                         .fontWeight(.medium)
@@ -240,26 +242,26 @@ struct PeriodSummaryView: View {
 
                     Spacer()
 
-                    Text(NumberFormatters.formatChange(change))
+                    Text(NumberFormatters.formatChange(performance.change))
                         .font(.title2)
                         .fontWeight(.semibold)
-                        .foregroundColor(data.isPositivePeriod ? .stockGreen : .stockRed)
+                        .foregroundColor(performance.isPositive ? .stockGreen : .stockRed)
 
-                    Text("(\(NumberFormatters.formatPercent(percentChange)))")
+                    Text("(\(NumberFormatters.formatPercent(performance.percentChange)))")
                         .font(.title2)
                         .fontWeight(.semibold)
-                        .foregroundColor(data.isPositivePeriod ? .stockGreen : .stockRed)
+                        .foregroundColor(performance.isPositive ? .stockGreen : .stockRed)
                 }
             }
 
-            if investedAmount > 0, let percentChange = data.periodPercentChange {
-                let gainLoss = investedAmount * (percentChange / 100)
+            if investedAmount > 0, let performance = data.displayPerformance(using: quote) {
+                let gainLoss = investedAmount * (performance.percentChange / 100)
                 let currentValue = investedAmount + gainLoss
                 HStack(spacing: 4) {
                     Text("\(NumberFormatters.formatCurrency(investedAmount)) invested \u{2192} \(NumberFormatters.formatCurrency(currentValue))")
                         .foregroundColor(.secondary)
-                    Text("(\(NumberFormatters.formatChange(gainLoss)) / \(NumberFormatters.formatPercent(percentChange)))")
-                        .foregroundColor(data.isPositivePeriod ? .stockGreen : .stockRed)
+                    Text("(\(NumberFormatters.formatChange(gainLoss)) / \(NumberFormatters.formatPercent(performance.percentChange)))")
+                        .foregroundColor(performance.isPositive ? .stockGreen : .stockRed)
                 }
                 .font(.subheadline)
             }
@@ -288,7 +290,7 @@ struct PeriodSummaryView: View {
         fetchedAt: Date()
     )
 
-    return ChartView(historicalData: mockData, timeRange: .oneMonth)
+    ChartView(historicalData: mockData, quote: nil, timeRange: .oneMonth)
         .padding()
         .frame(width: 500, height: 350)
 }
