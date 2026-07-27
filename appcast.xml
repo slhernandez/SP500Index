@@ -3,12 +3,12 @@
     <channel>
         <title>SP500Index</title>
         <item>
-            <title>1.0.0</title>
-            <pubDate>Mon, 27 Jul 2026 02:43:45 +0000</pubDate>
-            <sparkle:version>2</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+            <title>1.0.1</title>
+            <pubDate>Mon, 27 Jul 2026 02:47:25 +0000</pubDate>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/slhernandez/SP500Index/releases/download/v1.0.0-sparkle-baseline/SP500Index.dmg" length="2885741" type="application/octet-stream" sparkle:edSignature="kXfC08oQV5igrvDmcIAWrZs2WUOJW+4Ua8JBs3I14QK77HO6Dqp8wDsGTGF0MGmOtEIRcmkbBPFeydqe1+BlCA=="/>
+            <enclosure url="https://github.com/slhernandez/SP500Index/releases/download/v1.0.1/SP500Index.dmg" length="2895349" type="application/octet-stream" sparkle:edSignature="KncIcCkYhSn2kBnyakrs7bZTwxYC0kdU7YPnbONFLosqLwLCafc6W+wlm2ztjM/F5fmYOKfIGliBe9zd6Am2AA=="/>
         </item>
     </channel>
 </rss>
