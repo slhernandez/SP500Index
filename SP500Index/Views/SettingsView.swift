@@ -7,13 +7,28 @@
 
 import SwiftUI
 
+#if os(macOS)
+import SP500IndexUpdates
+#endif
+
 struct SettingsView: View {
     @AppStorage("refreshInterval") private var refreshIntervalMinutes: Int = 5
     @AppStorage("selectedSymbol") private var selectedSymbol: String = "^GSPC"
     @AppStorage("marketCategory") private var marketCategory: String = "us"
     @AppStorage("investedAmount") private var investedAmount: Double = 0
+    #if os(macOS)
+    private let updater: AppUpdater?
+    #endif
     #if os(iOS)
     @Environment(\.dismiss) private var dismiss
+    #endif
+
+    #if os(macOS)
+    init(updater: AppUpdater? = nil) {
+        self.updater = updater
+    }
+    #else
+    init() {}
     #endif
 
     var body: some View {
@@ -32,7 +47,7 @@ struct SettingsView: View {
         }
         #else
         settingsForm
-            .frame(width: 400, height: 480)
+            .frame(width: 400, height: 540)
             .navigationTitle("Settings")
         #endif
     }
@@ -104,6 +119,12 @@ struct SettingsView: View {
             } header: {
                 Text("Investment Tracking")
             }
+
+            #if os(macOS)
+            if let updater {
+                UpdateSettingsSection(appUpdater: updater)
+            }
+            #endif
 
             Section {
                 HStack {

@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -95,7 +97,17 @@ jobs:
 
       - name: Verify Code Signature
         run: |
-          codesign --verify --deep --strict --verbose=2 "$RUNNER_TEMP/export/SP500Index.app"
+          codesign --verify --strict --verbose=2 "$RUNNER_TEMP/export/SP500Index.app"
+
+          if [ -d "$RUNNER_TEMP/export/SP500Index.app/Contents/Frameworks/Sparkle.framework" ]; then
+            codesign --verify --strict --verbose=2 \
+              "$RUNNER_TEMP/export/SP500Index.app/Contents/Frameworks/Sparkle.framework"
+
+            find "$RUNNER_TEMP/export/SP500Index.app/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices" \
+              -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -r -d '' xpc_service; do
+                codesign --verify --strict --verbose=2 "$xpc_service"
+              done
+          fi
 
       - name: Notarize App
         env:
@@ -161,6 +173,41 @@ jobs:
 
           xcrun stapler staple "$RUNNER_TEMP/SP500Index.dmg"
 
+      - name: Generate Appcast
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
+            echo "Missing SPARKLE_PRIVATE_KEY secret"
+            exit 1
+          fi
+
+          SPARKLE_BIN=$(find ~/Library/Developer/Xcode/DerivedData \
+            -path "*/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_appcast" \
+            -print -quit 2>/dev/null | xargs -I{} dirname "{}")
+
+          if [ -z "$SPARKLE_BIN" ]; then
+            echo "Unable to locate Sparkle tools in DerivedData"
+            exit 1
+          fi
+
+          RELEASES_DIR="$RUNNER_TEMP/releases"
+          KEY_FILE="$RUNNER_TEMP/sparkle_private_key"
+          APPCAST_PATH="$RUNNER_TEMP/appcast.xml"
+
+          printf "%s" "$SPARKLE_PRIVATE_KEY" > "$KEY_FILE"
+          mkdir -p "$RELEASES_DIR"
+          cp "$RUNNER_TEMP/SP500Index.dmg" "$RELEASES_DIR/"
+
+          "$SPARKLE_BIN/generate_appcast" \
+            --ed-key-file "$KEY_FILE" \
+            --download-url-prefix "https://github.com/slhernandez/SP500Index/releases/download/${{ github.ref_name }}/" \
+            "$RELEASES_DIR"
+
+          cp "$RELEASES_DIR/appcast.xml" "$APPCAST_PATH"
+          rm -f "$KEY_FILE"
+
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -173,6 +220,31 @@ jobs:
         with:
           files: ${{ runner.temp }}/SP500Index.dmg
           generate_release_notes: true
+
+      - name: Checkout main for appcast
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: appcast-main
+
+      - name: Publish appcast
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cp "$RUNNER_TEMP/appcast.xml" appcast-main/appcast.xml
+          cd appcast-main
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- appcast.xml; then
+            echo "appcast.xml unchanged"
+            exit 0
+          fi
+
+          git add appcast.xml
+          git commit -m "Update appcast.xml for ${{ github.ref_name }}"
+          git push origin HEAD:main
 
       - name: Cleanup Keychain
         if: always()
