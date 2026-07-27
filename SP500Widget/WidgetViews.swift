@@ -214,6 +214,10 @@ struct MiniChartView: View {
     let data: [StockEntry.ChartDataPoint]
     let isPositive: Bool
 
+    private var yDomain: ClosedRange<Double> {
+        WidgetChartScale.domain(for: data)
+    }
+
     var body: some View {
         Chart(data) { point in
             LineMark(
@@ -224,7 +228,8 @@ struct MiniChartView: View {
 
             AreaMark(
                 x: .value("Date", point.date),
-                y: .value("Price", point.price)
+                yStart: .value("Baseline", yDomain.lowerBound),
+                yEnd: .value("Price", point.price)
             )
             .foregroundStyle(
                 LinearGradient(
@@ -236,13 +241,17 @@ struct MiniChartView: View {
         }
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
-        .chartYScale(domain: .automatic(includesZero: false))
+        .chartYScale(domain: yDomain)
     }
 }
 
 struct ChartView: View {
     let data: [StockEntry.ChartDataPoint]
     let isPositive: Bool
+
+    private var yDomain: ClosedRange<Double> {
+        WidgetChartScale.domain(for: data)
+    }
 
     var body: some View {
         Chart(data) { point in
@@ -255,7 +264,8 @@ struct ChartView: View {
 
             AreaMark(
                 x: .value("Date", point.date),
-                y: .value("Price", point.price)
+                yStart: .value("Baseline", yDomain.lowerBound),
+                yEnd: .value("Price", point.price)
             )
             .foregroundStyle(
                 LinearGradient(
@@ -279,7 +289,19 @@ struct ChartView: View {
                     .font(.caption2)
             }
         }
-        .chartYScale(domain: .automatic(includesZero: false))
+        .chartYScale(domain: yDomain)
+    }
+}
+
+private enum WidgetChartScale {
+    static func domain(for data: [StockEntry.ChartDataPoint]) -> ClosedRange<Double> {
+        guard let minimum = data.map(\.price).min(),
+              let maximum = data.map(\.price).max() else {
+            return 0...1
+        }
+
+        let padding = max((maximum - minimum) * 0.1, max(abs(maximum) * 0.001, 0.01))
+        return (minimum - padding)...(maximum + padding)
     }
 }
 
