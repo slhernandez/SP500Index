@@ -84,6 +84,7 @@ struct ContentView: View {
                 // Chart - takes remaining space
                 ChartView(
                     historicalData: viewModel.historicalData,
+                    quote: viewModel.currentQuote,
                     timeRange: viewModel.selectedTimeRange,
                     investedAmount: viewModel.isViewingNonPrimary ? 0 : viewModel.investedAmount
                 )

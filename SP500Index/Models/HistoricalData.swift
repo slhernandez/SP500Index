@@ -74,4 +74,18 @@ struct HistoricalData: Codable {
     var isPositivePeriod: Bool {
         (periodChange ?? 0) >= 0
     }
+
+    func displayPerformance(using quote: StockQuote?) -> (change: Double, percentChange: Double, isPositive: Bool)? {
+        if timeRange == .oneDay,
+           let quote,
+           quote.symbol == symbol {
+            return (quote.priceChange, quote.percentChange, quote.isPositive)
+        }
+
+        guard let change = periodChange, let percentChange = periodPercentChange else {
+            return nil
+        }
+
+        return (change, percentChange, isPositivePeriod)
+    }
 }
