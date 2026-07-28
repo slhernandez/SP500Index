@@ -11,6 +11,8 @@ import Foundation
 struct StockTimelineProvider: TimelineProvider {
     typealias Entry = StockEntry
 
+    private let dataService = StockDataService()
+
     func placeholder(in context: Context) -> StockEntry {
         .placeholder
     }
@@ -21,10 +23,12 @@ struct StockTimelineProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<StockEntry>) -> Void) {
-        let entry = loadCurrentEntry()
-        let refreshDate = calculateNextRefresh()
-        let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
-        completion(timeline)
+        Task {
+            let entry = await loadFreshEntry()
+            let refreshDate = calculateNextRefresh()
+            let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
+            completion(timeline)
+        }
     }
 
     // MARK: - Private Methods
@@ -32,7 +36,37 @@ struct StockTimelineProvider: TimelineProvider {
     private func loadCurrentEntry() -> StockEntry {
         let quote = SharedStorage.loadQuote()
         let historicalData = SharedStorage.loadHistoricalData()
-        return StockEntry.from(quote: quote, historicalData: historicalData)
+        return StockEntry.from(
+            quote: quote,
+            historicalData: historicalData,
+            updatedAt: SharedStorage.lastUpdated
+        )
+    }
+
+    private func loadFreshEntry() async -> StockEntry {
+        let symbol = SharedStorage.selectedSymbol
+
+        do {
+            async let quoteTask = dataService.fetchQuote(symbol: symbol)
+            async let historicalTask = dataService.fetchHistoricalData(symbol: symbol, range: .oneDay)
+            let (quote, historicalData) = try await (quoteTask, historicalTask)
+            let updatedAt = Date()
+
+            SharedStorage.saveWidgetData(
+                quote: quote,
+                historicalData: historicalData,
+                updatedAt: updatedAt
+            )
+
+            return StockEntry.from(
+                quote: quote,
+                historicalData: historicalData,
+                updatedAt: updatedAt
+            )
+        } catch {
+            // A widget refresh must remain useful when the network is unavailable.
+            return loadCurrentEntry()
+        }
     }
 
     private func calculateNextRefresh() -> Date {

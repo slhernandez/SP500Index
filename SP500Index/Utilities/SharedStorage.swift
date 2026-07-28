@@ -86,6 +86,17 @@ struct SharedStorage {
         }
     }
 
+    static func saveWidgetData(
+        quote: StockQuote,
+        historicalData: HistoricalData,
+        updatedAt: Date = Date()
+    ) {
+        saveQuote(quote)
+        saveHistoricalData(historicalData)
+        sharedDefaults?.set(updatedAt, forKey: Keys.lastUpdated)
+        sharedDefaults?.synchronize()
+    }
+
     static func loadHistoricalData() -> HistoricalData? {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
             return nil
