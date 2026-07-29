@@ -286,8 +286,7 @@ class StockViewModel: ObservableObject {
 
     private func persistToSharedStorage(quote: StockQuote, historicalData: HistoricalData) {
         SharedStorage.selectedSymbol = selectedSymbol
-        SharedStorage.saveQuote(quote)
-        SharedStorage.saveHistoricalData(historicalData)
+        SharedStorage.saveWidgetData(quote: quote, historicalData: historicalData)
 
         // Trigger widget reload after data is persisted
         WidgetCenter.shared.reloadTimelines(ofKind: "SP500Widget")

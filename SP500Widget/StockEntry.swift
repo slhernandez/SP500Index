@@ -41,14 +41,18 @@ struct StockEntry: TimelineEntry {
 
 extension StockEntry {
     /// Create entry from shared storage data
-    static func from(quote: StockQuote?, historicalData: HistoricalData?) -> StockEntry {
+    static func from(
+        quote: StockQuote?,
+        historicalData: HistoricalData?,
+        updatedAt: Date? = nil
+    ) -> StockEntry {
         if let quote = quote {
             let chartData = historicalData?.dataPoints.map { point in
                 ChartDataPoint(date: point.date, price: point.close)
             }
 
             return StockEntry(
-                date: Date(),
+                date: updatedAt ?? quote.lastUpdated,
                 symbol: quote.symbol,
                 name: quote.name,
                 price: quote.currentPrice,
