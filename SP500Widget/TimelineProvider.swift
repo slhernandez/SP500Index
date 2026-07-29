@@ -12,6 +12,7 @@ struct StockTimelineProvider: TimelineProvider {
     typealias Entry = StockEntry
 
     private let dataService = StockDataService()
+    private let refreshTimeoutNanoseconds: UInt64 = 3_000_000_000
 
     func placeholder(in context: Context) -> StockEntry {
         .placeholder
@@ -44,12 +45,11 @@ struct StockTimelineProvider: TimelineProvider {
     }
 
     private func loadFreshEntry() async -> StockEntry {
+        let cachedEntry = loadCurrentEntry()
         let symbol = SharedStorage.selectedSymbol
 
         do {
-            async let quoteTask = dataService.fetchQuote(symbol: symbol)
-            async let historicalTask = dataService.fetchHistoricalData(symbol: symbol, range: .oneDay)
-            let (quote, historicalData) = try await (quoteTask, historicalTask)
+            let (quote, historicalData) = try await fetchWidgetData(symbol: symbol)
             let updatedAt = Date()
 
             SharedStorage.saveWidgetData(
@@ -64,8 +64,33 @@ struct StockTimelineProvider: TimelineProvider {
                 updatedAt: updatedAt
             )
         } catch {
-            // A widget refresh must remain useful when the network is unavailable.
-            return loadCurrentEntry()
+            // Never leave the widget in its placeholder state while a request is slow or unavailable.
+            return cachedEntry
+        }
+    }
+
+    private func fetchWidgetData(symbol: String) async throws -> (StockQuote, HistoricalData) {
+        try await withThrowingTaskGroup(
+            of: (StockQuote, HistoricalData).self,
+            returning: (StockQuote, HistoricalData).self
+        ) { group in
+            group.addTask {
+                async let quoteTask = self.dataService.fetchQuote(symbol: symbol)
+                async let historicalTask = self.dataService.fetchHistoricalData(symbol: symbol, range: .oneDay)
+                return try await (quoteTask, historicalTask)
+            }
+
+            group.addTask {
+                try await Task.sleep(nanoseconds: refreshTimeoutNanoseconds)
+                throw URLError(.timedOut)
+            }
+
+            defer { group.cancelAll() }
+
+            guard let result = try await group.next() else {
+                throw URLError(.unknown)
+            }
+            return result
         }
     }
 
